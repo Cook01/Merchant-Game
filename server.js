@@ -6,8 +6,8 @@ const { Server } = require("socket.io");
 
 // Game Datas
 const STARTING_MONEY = 100;
-
 const JSON_ITEMS = require("./src/server/datas/ItemList.json");
+
 const { Item } = require("./src/server");
 const { Player } = require("./src/server");
 
@@ -42,14 +42,14 @@ server.listen(PORT, function(){
 
 
 // List of Items
-let itemList = [];
+let itemList = {};
 // Read Item List from JSON Data file
 for(let item of JSON_ITEMS){
-    itemList.push(new Item(item.id, item.name));
+    itemList[item.id] = (new Item(item.id, item.name));
 }
 
 // List of Players
-let playerList = [];
+let playerList = {};
 
 // Market (TMP - To be replaced later)
 
@@ -62,15 +62,14 @@ io.on("connection", (socket) => {
     //=========================== New Player ==================================
 
     socket.on("New Player", (pseudo) => {
+        // Send back Player ID
+        socket.emit("id", socket.id);
+
         // Create new Player
         let newPlayer = new Player(socket, pseudo, STARTING_MONEY);
         // Add new player to Player List
         playerList[socket.id] = newPlayer
-        // Send back Player ID
-        socket.emit("id", socket.id);
 
-        // Update player
-        newPlayer.update();
         // Update LeaderBoard
         updateLeaderBoard();
     });
@@ -84,7 +83,13 @@ io.on("connection", (socket) => {
     socket.on("Sell", (itemId, quantity) => {});
 
     // Update Prices
-    socket.on("Player Change Item Price", (itemId, priceOffset) => {});
+    socket.on("Player Change Item Price", (itemId, priceOffset) => {
+        let player = playerList[socket.id];
+        let item = itemList[itemId];
+        let newPrice = player.inventory.getPrice(item) + priceOffset;
+
+        player.changePrice(item, newPrice);
+    });
 
     //=========================== Player Disconnection ==================================
 

@@ -64,6 +64,35 @@ socket.on("Update Player", (player) => {
     let moneyUi = document.getElementById("money_ui");
     // Update Value
     moneyUi.textContent = player.money;
+
+    // Get the current Inventory UI Element
+    let oldInventoryUi = document.getElementById("inventory_ui");
+    // Create the new UI Element
+    let newInventoryUi = document.createElement('tbody');
+    newInventoryUi.id = "inventory_ui";
+
+    // For each Inventory Slot in Inventory
+    for(let itemId in player.inventory.slotList){
+        // Get the Item
+        let slot = player.inventory.slotList[itemId];
+
+        // Create a new row
+        let inventoryItemRow = newInventoryUi.insertRow();
+
+        // Create the cells
+        let itemNameCell = inventoryItemRow.insertCell();
+        let itemQuantityCell = inventoryItemRow.insertCell();
+        let itemPriceCell = inventoryItemRow.insertCell();
+
+        // Print the Item infos
+        itemNameCell.textContent = slot.item.name;
+        itemQuantityCell.textContent = slot.quantity;
+
+        itemPriceCell.innerHTML = slot.price + " <button onclick='changePrice(" + itemId + ", " + 1 + ")'>+</button><button onclick='changePrice(" + itemId + ", " + -1 + ")'>-</button>";
+    }
+
+    // Switch the old UI with the new one
+    oldInventoryUi.parentNode.replaceChild(newInventoryUi, oldInventoryUi);
 });
 
 //=============================================================
