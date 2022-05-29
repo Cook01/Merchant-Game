@@ -1,31 +1,31 @@
-//Dependencies
+// Dependencies
 const http = require("http");
 const express = require("express");
 const path = require("path");
 const { Server } = require("socket.io");
 
-//GLOBAL VARIABLES
+// GLOBAL VARIABLES
 const PORT = 3000;
 
 
 //============================================================= Init Server ========================================================
 
 
-//Init
+// Init
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 
-//Setup
+// Setup
 app.use("/client", express.static(__dirname + "/src/client"));
 
-//Routing
+// Routing
 app.get("/", function(request, response){
     response.sendFile(path.join(__dirname, "/src/client/html/index.html"));
 });
 
-//Server Start
+// Server Start
 server.listen(PORT, function(){
     console.log("Starting server on port " + PORT);
 });

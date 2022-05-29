@@ -1,7 +1,7 @@
-//Dependencies
+// Dependencies
 let socket = io()
 
-//For test purpose
+// For test purpose
 socket.on("debug", function(data){
     console.log(data);
 });
