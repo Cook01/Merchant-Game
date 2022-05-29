@@ -4,12 +4,13 @@ const express = require("express");
 const path = require("path");
 const { Server } = require("socket.io");
 
+// Game Datas
+const JSON_ITEMS = require("./src/server/datas/ItemList.json");
+const Item = require("./src/server");
+
 // GLOBAL VARIABLES
 const PORT = 3000;
 
-// Game Datas
-const JSON_ITEMS = require("./src/server/datas/ItemList.json");
-const Item = require("./src/server/Item");
 
 //============================================================= Init Server ========================================================
 
