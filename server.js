@@ -83,7 +83,27 @@ io.on("connection", (socket) => {
     //=========================== Player Inputs ==================================
 
     // Buy
-    socket.on("Buy", (itemId, quantity) => {});
+    socket.on("Buy", (itemId, quantity) => {
+        // Get Player
+        let player = playerList[socket.id];
+        // Get Item
+        let item = itemList[itemId];
+
+        // Check if Quantity is a number
+        quantity = parseInt(quantity);
+        if (isNaN(quantity))
+            quantity = 0
+
+        // Check if Quantity is >= 0
+        if(quantity < 0)
+            quantity = 0
+
+        // Buy Item from Market
+        player.buy(market, item, quantity);
+
+        // Update the Market
+        updateMarket();
+    });
 
     // Sell
     socket.on("Sell", (itemId, quantity) => {});

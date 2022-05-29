@@ -8,8 +8,39 @@ class Player{
         this.money = money;
 
         this.inventory = new Inventory();
-        this.inventory.addItem(new Item(0, "Test"), 10, 5);
 
+        this.update();
+    }
+
+    // Player Buy Item from Market
+    buy(market, item, quantity){
+        // If Market has the Item
+        if(market.hasItem(item) && market.getQuantity(item) >= quantity){
+            // Get Item price
+            let price = market.getPrice(item);
+            // Calculate the price of the Buy Order
+            let buyOrderPrice = price * quantity;
+
+            // If Player has enought money
+            if(this.money >= buyOrderPrice){
+                // Player pay the Market
+                this.money -= parseInt(buyOrderPrice);
+
+                // Player Get the Item(s)
+                this.inventory.addItem(item, quantity, price);
+                // Market remove the Item(s)
+                market.removeItem(item, quantity);
+
+            } else {
+                //Not enought money
+                this.socket.emit("Failure", "You don't have enought money"); 
+            }
+        } else {
+            //Not enought Item in market
+            this.socket.emit("Failure", "Market doesn't have enought " + item.name);
+        }
+
+        // Update Player Infos
         this.update();
     }
 

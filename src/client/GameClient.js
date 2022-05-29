@@ -34,13 +34,13 @@ socket.on("id", (id) => {
 
 // Buy
 function buy(itemId){
-    let quantity = document.getElementById("buy_" + itemId);
-    socket.emit("Buy", itemId, quantity.value);
+    let quantity = document.getElementById("buy_" + itemId).value;
+    socket.emit("Buy", itemId, quantity);
 }
 // Sell
 function sell(itemId){
-    let quantity = document.getElementById("sell_" + itemId);
-    socket.emit("Sell", itemId, quantity.value);
+    let quantity = document.getElementById("sell_" + itemId).value;
+    socket.emit("Sell", itemId, quantity);
 }
 
 // Player Change Prices
