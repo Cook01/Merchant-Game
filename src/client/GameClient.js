@@ -113,22 +113,60 @@ socket.on("Update LeaderBoard", (leaderBoard) => {
         let player = leaderBoard[id];
 
         // Create a new row
-        let newRow = newScoreUi.insertRow();
+        let playerRow = newScoreUi.insertRow();
 
         // Create the cells
-        let pseudoCell = newRow.insertCell();
-        let scoreCell = newRow.insertCell();
+        let playerPseudoCell = playerRow.insertCell();
+        let playerScoreCell = playerRow.insertCell();
 
         // Print the player infos
-        pseudoCell.textContent = player.pseudo;
-        scoreCell.textContent = player.score;
+        playerPseudoCell.textContent = player.pseudo;
+        playerScoreCell.textContent = player.score;
 
         // If the row is for current player
         if(id == myId)
             // Set CSS Style to bold blue in the Players tab
-            newRow.setAttribute("style", "color:blue; font-weight: bold;");
+            playerRow.setAttribute("style", "color:blue; font-weight: bold;");
     }
 
     // Switch the old UI with the new one
     oldScoreUi.parentNode.replaceChild(newScoreUi, oldScoreUi);
+});
+
+//=============================================================
+
+// Update the Market
+socket.on("Update Market", (market) => {
+    // Get the current Market UI Element
+    let oldMarketUi = document.getElementById("market_ui");
+    // Create the new Market UI Element
+    let newMarketUi = document.createElement('tbody');
+    newMarketUi.id = "market_ui";
+
+    // For each Item in the Market
+    for(let itemId in market.slotList){
+        // Get the Inventory Slot
+        let slot = market.slotList[itemId];
+
+        // Create a new row
+        let inventoryItemRow = newMarketUi.insertRow();
+
+        // Create the cells
+        let itemNameCell = inventoryItemRow.insertCell();
+        let itemQuantityCell = inventoryItemRow.insertCell();
+        let itemPriceCell = inventoryItemRow.insertCell();
+        let itemBuyCell = inventoryItemRow.insertCell();
+        let itemSellCell = inventoryItemRow.insertCell();
+
+        // Print the Market infos
+        itemNameCell.textContent = slot.item.name;
+        itemQuantityCell.textContent = slot.quantity;
+        itemPriceCell.textContent = slot.price;
+
+        itemBuyCell.innerHTML = "<input type='number', min='0', id='buy_" + itemId + "', value=0><button onclick='buy(" + itemId + ")'>Buy</button>";
+        itemSellCell.innerHTML = "<input type='number', min='0', id='sell_" + itemId +"', value=0><button onclick='sell(" + itemId + ")'>Sell</button>";
+    }
+
+    //switch the old UI with the new one
+    oldMarketUi.parentNode.replaceChild(newMarketUi, oldMarketUi);
 });

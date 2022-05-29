@@ -10,6 +10,7 @@ const JSON_ITEMS = require("./src/server/datas/ItemList.json");
 
 const { Item } = require("./src/server");
 const { Player } = require("./src/server");
+const { Market } = require("./src/server");
 
 // GLOBAL VARIABLES
 const PORT = 3000;
@@ -52,9 +53,13 @@ for(let item of JSON_ITEMS){
 let playerList = {};
 
 // Market (TMP - To be replaced later)
+let market = new Market();
+for(let id in itemList)
+    market.addItem(itemList[id], 100, 1);
 
 
 //============================================================= Player Interactions ========================================================
+
 
 // New Client connection, set up Player-Server intaractions
 io.on("connection", (socket) => {
@@ -72,6 +77,7 @@ io.on("connection", (socket) => {
 
         // Update LeaderBoard
         updateLeaderBoard();
+        updateMarket();
     });
 
     //=========================== Player Inputs ==================================
@@ -129,7 +135,7 @@ function updateLeaderBoard(){
 
 // Update Market (TMP - To be replaced)
 function updateMarket(){
-    io.emit("Update Market", null);
+    io.emit("Update Market", market);
 }
 
 // Update Customers
