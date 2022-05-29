@@ -5,8 +5,11 @@ const path = require("path");
 const { Server } = require("socket.io");
 
 // Game Datas
+const STARTING_MONEY = 100;
+
 const JSON_ITEMS = require("./src/server/datas/ItemList.json");
-const Item = require("./src/server");
+const { Item } = require("./src/server");
+const { Player } = require("./src/server");
 
 // GLOBAL VARIABLES
 const PORT = 3000;
@@ -46,6 +49,8 @@ for(let item of JSON_ITEMS){
 }
 
 // List of Players
+let playerList = [];
+
 // Market (TMP - To be replaced later)
 
 
@@ -57,8 +62,17 @@ io.on("connection", (socket) => {
     //=========================== New Player ==================================
 
     socket.on("New Player", (pseudo) => {
+        // Create new Player
+        let newPlayer = new Player(socket, pseudo, Math.round(Math.random() * (99 - 1) + 1));
+        // Add new player to Player List
+        playerList[socket.id] = newPlayer
         // Send back Player ID
         socket.emit("id", socket.id);
+
+        // Update player
+        newPlayer.update();
+        // Update LeaderBoard
+        updateLeaderBoard();
     });
 
     //=========================== Player Inputs ==================================
@@ -72,14 +86,20 @@ io.on("connection", (socket) => {
     // Update Prices
     socket.on("Player Change Item Price", (itemId, priceOffset) => {});
 
-    //=========================== Update Player Infos ==================================
-
-    // Player Inventory
-    socket.emit("Update Player", null);
-
     //=========================== Player Disconnection ==================================
 
-    socket.on('disconnect', () => {});
+    socket.on('disconnect', () => {
+        // If Player ID exist
+        if(playerList[socket.id]){
+            // Remove Player from Player List
+            delete playerList[socket.id];
+        }
+
+        console.log(playerList);
+
+        // Update the LeaderBoard
+        updateLeaderBoard();
+    });
 
 });
 
@@ -89,7 +109,19 @@ io.on("connection", (socket) => {
 
 // Update LeaderBoard
 function updateLeaderBoard(){
-    io.emit("Update LeaderBoard", null);
+    // Init new LeaderBoard
+    let leaderBoard = {};
+
+    // Add every players (Score = Money, TBD)
+    for(let id in playerList){
+        leaderBoard[id] = {
+            pseudo: playerList[id].pseudo,
+            score: playerList[id].money
+        }
+    }
+
+    // Broadcast LeaderBoard
+    io.emit("Update LeaderBoard", leaderBoard);
 }
 
 // Update Market (TMP - To be replaced)

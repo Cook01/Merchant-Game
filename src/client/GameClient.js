@@ -2,7 +2,7 @@
 let socket = io()
 
 // For test purpose
-socket.on("debug", function(data){
+socket.on("debug", (data) => {
     console.log(data);
 });
 
@@ -24,7 +24,7 @@ let myId = -1;
 socket.emit("New Player", pseudo);
 
 // Get Player ID
-socket.on("id", function(id){
+socket.on("id", (id) => {
     myId = id;
 });
 
@@ -43,16 +43,63 @@ function sell(itemId){
     socket.emit("Sell", itemId, quantity.value);
 }
 
-// Update Prices
+// Player Change Prices
 function changePrice(itemId, priceOffset){
     socket.emit("Player Change Item Price", itemId, priceOffset);
 }
 
 
 // Display Transactions Failures
-socket.on("Failure", function(failureMsg){
+socket.on("Failure", (failureMsg) => {
     alert(failureMsg);
 });
 
 
-//============================================================= Server Inputs ========================================================
+//============================================================= Server Updates ========================================================
+
+
+// Update Player Infos
+socket.on("Update Player", (player) => {
+    // Get Money Display UI
+    let moneyUi = document.getElementById("money_ui");
+    // Update Value
+    moneyUi.textContent = player.money;
+});
+
+//=============================================================
+
+// Update LeaderBoard
+socket.on("Update LeaderBoard", (leaderBoard) => {
+
+    // Get the current Score UI Element
+    let oldScoreUi = document.getElementById("score_ui");
+
+    // Create the new UI Element
+    let newScoreUi = document.createElement('tbody');
+    newScoreUi.id = "score_ui";
+
+    // For each entry of LeaderBoard
+    for(let id in leaderBoard){
+        // Get Player
+        let player = leaderBoard[id];
+
+        // Create a new row
+        let newRow = newScoreUi.insertRow();
+
+        // Create the cells
+        let pseudoCell = newRow.insertCell();
+        let scoreCell = newRow.insertCell();
+
+        // Print the player infos
+        pseudoCell.textContent = player.pseudo;
+        scoreCell.textContent = player.score;
+
+        // If the row is for current player
+        if(id == myId)
+            // Set CSS Style to bold blue in the Players tab
+            newRow.setAttribute("style", "color:blue; font-weight: bold;");
+    }
+
+    // Switch the old UI with the new one
+    oldScoreUi.parentNode.replaceChild(newScoreUi, oldScoreUi);
+});
