@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 
     socket.on("New Player", (pseudo) => {
         // Create new Player
-        let newPlayer = new Player(socket, pseudo, Math.round(Math.random() * (99 - 1) + 1));
+        let newPlayer = new Player(socket, pseudo, STARTING_MONEY);
         // Add new player to Player List
         playerList[socket.id] = newPlayer
         // Send back Player ID
@@ -94,8 +94,6 @@ io.on("connection", (socket) => {
             // Remove Player from Player List
             delete playerList[socket.id];
         }
-
-        console.log(playerList);
 
         // Update the LeaderBoard
         updateLeaderBoard();
