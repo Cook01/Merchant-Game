@@ -7,6 +7,9 @@ const { Server } = require("socket.io");
 // GLOBAL VARIABLES
 const PORT = 3000;
 
+// Game Datas
+const JSON_ITEMS = require("./src/server/datas/ItemList.json");
+const Item = require("./src/server/Item");
 
 //============================================================= Init Server ========================================================
 
@@ -35,6 +38,12 @@ server.listen(PORT, function(){
 
 
 // List of Items
+let itemList = [];
+// Read Item List from JSON Data file
+for(let item of JSON_ITEMS){
+    itemList.push(new Item(item.id, item.name));
+}
+
 // List of Players
 // Market (TMP - To be replaced later)
 

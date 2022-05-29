@@ -1,0 +1,36 @@
+[
+    {
+        "id": 0,
+        "name": "Apple"
+    },
+
+    {
+        "id": 1,
+        "name": "Sword"
+    },
+
+    {
+        "id": 2,
+        "name": "Shield"
+    },
+
+    {
+        "id": 3,
+        "name": "Potion"
+    },
+
+    {
+        "id": 4,
+        "name": "Armor"
+    },
+
+    {
+        "id": 5,
+        "name": "Bow"
+    },
+
+    {
+        "id": 6,
+        "name": "Arrow"
+    }
+]
