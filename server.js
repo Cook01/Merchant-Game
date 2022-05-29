@@ -103,10 +103,32 @@ io.on("connection", (socket) => {
 
         // Update the Market
         updateMarket();
+        // Update the LeaderBoard
+        updateLeaderBoard();
     });
 
     // Sell
-    socket.on("Sell", (itemId, quantity) => {});
+    socket.on("Sell", (itemId, quantity) => {
+        let player = playerList[socket.id];
+        let item = itemList[itemId];
+
+        // Check if Quantity is a number
+        quantity = parseInt(quantity);
+        if (isNaN(quantity))
+            quantity = 0
+
+        // Check if Quantity is >= 0
+        if(quantity < 0)
+            quantity = 0
+
+        // Sell Item to Market
+        player.sell(market, item, quantity);
+
+        // Update the Market
+        updateMarket();
+        // Update the LeaderBoard
+        updateLeaderBoard();
+    });
 
     // Update Prices
     socket.on("Player Change Item Price", (itemId, priceOffset) => {
