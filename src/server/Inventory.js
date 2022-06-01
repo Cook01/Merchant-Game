@@ -98,8 +98,8 @@ class InventorySlot{
     remove(quantity){
         this.quantity -= parseInt(quantity);
 
-        if(quantity < 0)
-            quantity = 0;
+        if(this.quantity < 0)
+            this.quantity = 0;
     }
 
     // Set the Price of the Inventory Slot

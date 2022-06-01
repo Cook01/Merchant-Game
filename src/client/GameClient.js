@@ -167,6 +167,55 @@ socket.on("Update Market", (market) => {
         itemSellCell.innerHTML = "<input type='number', min='0', id='sell_" + itemId +"', value=0><button onclick='sell(" + itemId + ")'>Sell</button>";
     }
 
-    //switch the old UI with the new one
+    // Switch the old UI with the new one
     oldMarketUi.parentNode.replaceChild(newMarketUi, oldMarketUi);
+});
+
+//=============================================================
+
+// Update the Customers
+socket.on("Update Customers", (customerList) => {
+    console.log(customerList);
+    
+    // Get the current Customers UI Element
+    let oldCustomersUi = document.getElementById("customers_ui");
+    // Create the new Customers UI Element
+    let newCustomersUi = document.createElement("div");
+    newCustomersUi.id = "customers_ui";
+
+    for(let customer of customerList){
+
+        // New table
+        let customerTableHTML = "<table>";
+        // Set caption
+        customerTableHTML += "<caption>Budget : <span style='font-weight: bold'>" + customer.money + "</span></caption>";
+
+        // Set the Header
+        customerTableHTML += "<thead></tr><tr><th>Item Name</th><th>Quantity</th></tr></thead>";
+        // New tBody
+        customerTableHTML += "<tbody>"
+        // Foreach item in wishlist
+        for(let elementId in customer.wishlist){
+            const whishlistElement = customer.wishlist[elementId];
+
+            // Create a new row
+            customerTableHTML += "<tr>";
+
+            // Create the cells
+            customerTableHTML += "<td>" + whishlistElement.item.name + "</td>";
+            customerTableHTML += "<td>" + whishlistElement.quantity + "</td>";
+
+            // Close the row
+            customerTableHTML += "</tr>";
+        }
+        // Close the tBody
+        customerTableHTML += "</tbody>";
+        // Close the Table
+        customerTableHTML += "</table>";
+
+        newCustomersUi.innerHTML += customerTableHTML;
+    }
+
+    // Switch the old UI with the new one
+    oldCustomersUi.parentNode.replaceChild(newCustomersUi, oldCustomersUi);
 });

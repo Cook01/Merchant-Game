@@ -12,6 +12,12 @@ class Player{
         this.update();
     }
 
+    // Return Player ID (= Socket ID)
+    getID(){
+        return this.socket.id;
+    }
+
+
     // Player Buy Item from the Market
     buy(market, item, quantity){
         // If Market has the Item

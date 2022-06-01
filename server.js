@@ -8,12 +8,16 @@ const { Server } = require("socket.io");
 const STARTING_MONEY = 100;
 const JSON_ITEMS = require("./src/server/datas/ItemList.json");
 
+const CUSTOMER_SPAWN_RATE = 1/60; // ~= 1 min
+const CUSTOMER_DESPAWN_RATE = 1/ (5 * 60); // ~= 5 min
+
 const { Item } = require("./src/server");
 const { Player } = require("./src/server");
 const { Market } = require("./src/server");
+const { Customer } = require("./src/server");
 
 // GLOBAL VARIABLES
-const PORT = 3000;
+const PORT = 5000;
 
 
 //============================================================= Init Server ========================================================
@@ -57,6 +61,9 @@ let market = new Market();
 for(let id in itemList)
     market.addItem(itemList[id], 100, 1);
 
+// List of Customers
+let customerList = [];
+
 
 //============================================================= Player Interactions ========================================================
 
@@ -75,9 +82,12 @@ io.on("connection", (socket) => {
         // Add new player to Player List
         playerList[socket.id] = newPlayer
 
-        // Update LeaderBoard
+        // Update the LeaderBoard
         updateLeaderBoard();
+        // Update the Market
         updateMarket();
+        // Update the Customers
+        updateCustomers();
     });
 
     //=========================== Player Inputs ==================================
@@ -182,7 +192,32 @@ function updateMarket(){
 
 // Update Customers
 function updateCustomers(){
-    io.emit("Update Villagers", null);
+    io.emit("Update Customers", customerList);
 }
 
+
+
 // Generate new Customers
+setInterval(() => {
+    
+    if(Math.random() < CUSTOMER_SPAWN_RATE){
+        let newCustomer = new Customer(Math.floor(Math.random() * (100 - 50) + 50)); // Rand * (max - min) + min
+        newCustomer.generateRandomWishlist(itemList);
+
+        customerList.push(newCustomer);
+
+        console.log("New Customer");
+    }
+
+    for(let i in customerList){
+        customerList[i].shop(playerList);
+
+        if(Object.keys(customerList[i].wishlist).length == 0 || customerList[i].money <= 0 || Math.random() < CUSTOMER_DESPAWN_RATE){
+            console.log("Customer leave ...");
+            customerList.splice(i, 1);
+        }
+    }
+
+    updateCustomers();
+    updateLeaderBoard();
+}, 1000);
