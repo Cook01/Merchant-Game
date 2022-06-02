@@ -196,28 +196,42 @@ function updateCustomers(){
 }
 
 
+//============================================================= Main Loop ========================================================
 
-// Generate new Customers
+
+// Every seconds
 setInterval(() => {
     
+    // Random Customer spawn
     if(Math.random() < CUSTOMER_SPAWN_RATE){
+        // Generate new Customer
         let newCustomer = new Customer(Math.floor(Math.random() * (100 - 50) + 50)); // Rand * (max - min) + min
+        // Generate random wishlist
         newCustomer.generateRandomWishlist(itemList);
 
+        // Add new Customer to Customer List
         customerList.push(newCustomer);
 
+        // Server Log
         console.log("New Customer");
     }
 
+    // For each Customer
     for(let i in customerList){
+        // Customer Shopping Action
         customerList[i].shop(playerList);
 
+        // If Customer finish shopping (or random despawn)
         if(Object.keys(customerList[i].wishlist).length == 0 || customerList[i].money <= 0 || Math.random() < CUSTOMER_DESPAWN_RATE){
+            // Server Log
             console.log("Customer leave ...");
+            // Remove Customer from List
             customerList.splice(i, 1);
         }
     }
 
+    // Update Customes
     updateCustomers();
+    // Update Leader Board
     updateLeaderBoard();
 }, 1000);
