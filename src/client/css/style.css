@@ -6,6 +6,8 @@ table {
     display: inline-block;
     margin: 0.5%;
     vertical-align: top;
+
+    white-space: nowrap;
 }
 
 table td, table th {
@@ -47,4 +49,50 @@ caption {
     color: #F0F0F0;
     text-align: center;
     border-left: none;
+}
+
+#wholesales_ui {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.wholesale {
+    display: grid;
+    grid-template-areas:
+    'wholesale_timer wholesale_timer'
+    'item_list bid_list'
+    'wholesale_bid_input wholesale_bid_input';
+
+    border: 6px solid #948473;
+    gap: 10px;
+    padding: 10px;
+
+    margin: 0.5%;
+}
+
+.wholesale_timer {
+    grid-area: wholesale_timer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-weight: bold;
+}
+
+.item_list{
+    grid-area: item_list;
+}
+
+.bid_list{
+    grid-area: bid_list;
+}
+
+.wholesale_bid_input{
+    grid-area: wholesale_bid_input;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

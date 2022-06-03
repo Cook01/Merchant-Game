@@ -29,15 +29,18 @@ class Wholesale{
         let moneyDisp = player.money;
         let playerFound = false;
 
-        for(let bid of this.bidList){
-            if(bid.player.getID() === player.getID()){
-                moneyDisp += parseInt(bid.money);
+        for(let i in this.bidList){
+            if(this.bidList[i].player.getID() === player.getID()){
+                moneyDisp += parseInt(this.bidList[i].money);
 
                 if(money > moneyDisp)
                     money = moneyDisp;
 
-                bid.changeBid(money);
+                this.bidList[i].changeBid(money);
                 playerFound = true;
+
+                if(this.bidList[i].money == 0)
+                    this.bidList.splice(i);
             }
         }
 
@@ -45,7 +48,8 @@ class Wholesale{
             if(money > moneyDisp)
                 money = moneyDisp;
 
-            this.bidList.push(new Bid(player, money));
+            if(money > 0)
+                this.bidList.push(new Bid(player, money));
         }
     }
 

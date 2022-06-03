@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const { Server } = require("socket.io");
 const _ = require("lodash");
+
 // Game Datas
 const STARTING_MONEY = 100;
 const JSON_ITEMS = require("./src/server/datas/ItemList.json");
@@ -11,7 +12,7 @@ const JSON_ITEMS = require("./src/server/datas/ItemList.json");
 const CUSTOMER_SPAWN_RATE = 1/(2 * 60); // ~= 2 min
 const CUSTOMER_DESPAWN_RATE = 1/(5 * 60); // ~= 5 min
 
-const WHOLESALE_SPAWN_TIME = 5; // = 2 min
+const WHOLESALE_SPAWN_TIME = 2 * 60; // = 2 min
 
 const { Item } = require("./src/server");
 const { Player } = require("./src/server");
@@ -83,7 +84,7 @@ io.on("connection", (socket) => {
         playerList[socket.id] = newPlayer
 
         // Update the LeaderBoard
-        updateLeaderBoard();
+        // updateLeaderBoard();
         // Update the Customers
         updateCustomers();
     });
@@ -105,15 +106,20 @@ io.on("connection", (socket) => {
         let player = playerList[socket.id];
         let wholesale = wholesaleList.find((x) => {return x.id == wholesaleID});
 
-        if(bid < 0)
-            bid = 0;
+        bid = parseFloat(bid);
 
-        if(wholesale != undefined){
-            wholesale.addBid(player, bid);
+        if(!isNaN(bid)){
+            bid = Math.round(bid);
+
+            if(bid < 0)
+                bid = 0;
+
+            if(wholesale != undefined)
+                wholesale.addBid(player, bid);
         }
 
         player.update();
-        updateLeaderBoard();
+        // updateLeaderBoard();
         updateWholesales();
     });
 
@@ -127,7 +133,7 @@ io.on("connection", (socket) => {
         }
 
         // Update the LeaderBoard
-        updateLeaderBoard();
+        // updateLeaderBoard();
     });
 
 });
@@ -137,21 +143,21 @@ io.on("connection", (socket) => {
 
 
 // Update LeaderBoard
-function updateLeaderBoard(){
-    // Init new LeaderBoard
-    let leaderBoard = {};
+// function updateLeaderBoard(){
+//     // Init new LeaderBoard
+//     let leaderBoard = {};
 
-    // Add every players (Score = Money, TBD)
-    for(let id in playerList){
-        leaderBoard[id] = {
-            pseudo: playerList[id].pseudo,
-            score: playerList[id].money
-        }
-    }
+//     // Add every players (Score = Money, TBD)
+//     for(let id in playerList){
+//         leaderBoard[id] = {
+//             pseudo: playerList[id].pseudo,
+//             score: playerList[id].money
+//         }
+//     }
 
-    // Broadcast LeaderBoard
-    io.emit("Update LeaderBoard", leaderBoard);
-}
+//     // Broadcast LeaderBoard
+//     io.emit("Update LeaderBoard", leaderBoard);
+// }
 
 // Update Customers
 function updateCustomers(){
@@ -216,7 +222,7 @@ setInterval(() => {
     wholesaleCooldown--;
 
     if(wholesaleCooldown <= 0){
-        let id = wholesaleList.length;
+        let id = new Date().getTime();
         wholesaleList.push(Wholesale.generateRandomWholesale(id, itemList));
 
         wholesaleCooldown = WHOLESALE_SPAWN_TIME;
@@ -243,7 +249,7 @@ setInterval(() => {
     // Update Customes
     updateCustomers();
     // Update Leader Board
-    updateLeaderBoard();
+    // updateLeaderBoard();
     // Update Wholesale
     updateWholesales();
 }, 1000);
