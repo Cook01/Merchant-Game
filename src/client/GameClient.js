@@ -73,6 +73,12 @@ function changePrice(itemId, priceOffset){
     socket.emit("Player Change Item Price", itemId, priceOffset);
 }
 
+// Player Change Prices
+function bid(wholesaleID){
+    let bid = document.getElementById("bid_" + wholesaleID).value;
+    socket.emit("Player Bid", wholesaleID, bid);
+}
+
 
 // Display Transactions Failures
 socket.on("Failure", (failureMsg) => {
@@ -160,44 +166,6 @@ socket.on("Update LeaderBoard", (leaderBoard) => {
 
 //=============================================================
 
-// Update the Market
-socket.on("Update Market", (market) => {
-    // Get the current Market UI Element
-    let oldMarketUi = document.getElementById("market_ui");
-    // Create the new Market UI Element
-    let newMarketUi = document.createElement('tbody');
-    newMarketUi.id = "market_ui";
-
-    // For each Item in the Market
-    for(let itemId in market.slotList){
-        // Get the Inventory Slot
-        let slot = market.slotList[itemId];
-
-        // Create a new row
-        let inventoryItemRow = newMarketUi.insertRow();
-
-        // Create the cells
-        let itemNameCell = inventoryItemRow.insertCell();
-        let itemQuantityCell = inventoryItemRow.insertCell();
-        let itemPriceCell = inventoryItemRow.insertCell();
-        let itemBuyCell = inventoryItemRow.insertCell();
-        let itemSellCell = inventoryItemRow.insertCell();
-
-        // Print the Market infos
-        itemNameCell.textContent = slot.item.name;
-        itemQuantityCell.textContent = slot.quantity;
-        itemPriceCell.textContent = slot.price;
-
-        itemBuyCell.innerHTML = "<input type='number', min='0', id='buy_" + itemId + "', value=0><button onclick='buy(" + itemId + ")'>Buy</button>";
-        itemSellCell.innerHTML = "<input type='number', min='0', id='sell_" + itemId +"', value=0><button onclick='sell(" + itemId + ")'>Sell</button>";
-    }
-
-    // Switch the old UI with the new one
-    oldMarketUi.parentNode.replaceChild(newMarketUi, oldMarketUi);
-});
-
-//=============================================================
-
 // Update the Customers
 socket.on("Update Customers", (customerList) => {
     // Get the current Customers UI Element
@@ -241,4 +209,58 @@ socket.on("Update Customers", (customerList) => {
 
     // Switch the old UI with the new one
     oldCustomersUi.parentNode.replaceChild(newCustomersUi, oldCustomersUi);
+});
+
+//=============================================================
+
+// Update the Wholesales
+socket.on("Update Wholesales", (wholesaleList) => {
+    // Get the current Wholesales UI Element
+    let oldWholesalesUi = document.getElementById("wholesales_ui");
+    // Create the new Wholesales UI Element
+    let newWholesalesUi = document.createElement("div");
+    newWholesalesUi.id = "wholesales_ui";
+
+    // For each Customer in Customer List
+    for(let wholesale of wholesaleList){
+        // New table
+        let wholesaleTableHTML = "<table id='wholesale_" + wholesale.id + "'>";
+        // Set caption
+        let nbMin = Math.floor(wholesale.timer/60);
+        let nbSec = wholesale.timer%60;
+        wholesaleTableHTML += "<caption><span style='font-weight: bold'>" + nbMin + ":" + nbSec + "</span></caption>";
+
+        // Set the Header
+        wholesaleTableHTML += "<thead></tr><tr><th>" + wholesale.item.name + "</th><th>" + wholesale.quantity + "</th></tr></thead>";
+        // New tBody
+        wholesaleTableHTML += "<tbody>"
+        // Foreach item in wishlist
+        for(let bid of wholesale.bidList){
+            // Create a new row
+            wholesaleTableHTML += "<tr>";
+
+            // Create the cells
+            wholesaleTableHTML += "<td>" + bid.player.pseudo + "</td>";
+            wholesaleTableHTML += "<td>" + bid.money + "</td>";
+
+            // Close the row
+            wholesaleTableHTML += "</tr>";
+        }
+        let value = 0;
+        let oldInput = document.getElementById("bid_" + wholesale.id);
+        if(oldInput != null)
+            value = oldInput.value;
+
+        wholesaleTableHTML += "<td></td><td><input type='number', min='0', id='bid_" + wholesale.id +"', value=" + value + "><button onclick='bid(" + wholesale.id + ")'>Bid</button></td>";
+
+        // Close the tBody
+        wholesaleTableHTML += "</tbody>";
+        // Close the Table
+        wholesaleTableHTML += "</table>";
+
+        newWholesalesUi.innerHTML += wholesaleTableHTML;
+    }
+
+    // Switch the old UI with the new one
+    oldWholesalesUi.parentNode.replaceChild(newWholesalesUi, oldWholesalesUi);
 });
