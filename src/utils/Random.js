@@ -1,5 +1,5 @@
 class Random{
-    static boxMullerTransform() {
+    static #boxMullerTransform() {
         const u1 = Math.random();
         const u2 = Math.random();
         
@@ -10,7 +10,7 @@ class Random{
     }
     
     static normal(mean = 0, stddev = 1) {
-        const { z0, _ } = boxMullerTransform();
+        const { z0, _ } = Random.#boxMullerTransform();
         
         return z0 * stddev + mean;
     }
