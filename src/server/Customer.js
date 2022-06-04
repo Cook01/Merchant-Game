@@ -142,6 +142,9 @@ class Customer{
 
             // Update Player
             player.update();
+            
+            // Highlight Sale
+            player.pingItem(item);
         }
     }
 }

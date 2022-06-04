@@ -62,6 +62,18 @@ let playerList = {};
 // List of Customers
 let customerList = [];
 
+
+// === FOR DEBUG ONLY ===
+// // Generate new Customer
+// let newCustomer = new Customer(Math.floor(Math.random() * (100 - 50) + 50)); // Rand * (max - min) + min
+// // Generate random wishlist
+// newCustomer.generateRandomWishlist(itemList);
+
+// // Add new Customer to Customer List
+// customerList.push(newCustomer);
+// ======================
+
+
 // List of Wholesales
 let wholesaleList = [];
 
@@ -83,6 +95,15 @@ io.on("connection", (socket) => {
         // Add new player to Player List
         playerList[socket.id] = newPlayer
 
+
+        // === FOR DEBUG ONLY ===
+        // for(let i in itemList)
+        //     newPlayer.inventory.addItem(itemList[i], 10, 10);
+
+        // newPlayer.update();
+        // ======================
+
+
         // Update the LeaderBoard
         // updateLeaderBoard();
         // Update the Customers
@@ -92,12 +113,22 @@ io.on("connection", (socket) => {
     //=========================== Player Inputs ==================================
 
     // Update Prices
-    socket.on("Player Change Item Price", (itemId, priceOffset) => {
+    socket.on("Player Change Item Price", (itemId, new_price) => {
         let player = playerList[socket.id];
         let item = itemList[itemId];
-        let newPrice = player.inventory.getPrice(item) + priceOffset;
 
-        player.changePrice(item, newPrice);
+        new_price = parseFloat(new_price);
+
+        if(!isNaN(new_price)){
+            new_price = Math.round(new_price);
+
+            if(new_price < 0)
+            new_price = 0;
+
+            player.changePrice(item, new_price);
+        } else {
+            player.update();
+        }
     });
 
 
@@ -130,10 +161,20 @@ io.on("connection", (socket) => {
         if(playerList[socket.id]){
             // Remove Player from Player List
             delete playerList[socket.id];
+
+            // Remove Player from Wholesales Bids
+            for(let wholesale of wholesaleList){
+                for(let i in wholesale.bidList){
+                    if(wholesale.bidList[i].player.getID() == socket.id){
+                        wholesale.bidList.splice(i, 1);
+                    }
+                }
+            }
         }
 
         // Update the LeaderBoard
         // updateLeaderBoard();
+        updateWholesales();
     });
 
 });

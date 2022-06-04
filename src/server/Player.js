@@ -25,6 +25,10 @@ class Player{
         this.update();
     }
 
+    pingItem(item){
+        this.socket.emit("Ping Player Item", item);
+    }
+
     // Update Player infos
     update(){
         // Clone this Player

@@ -56,24 +56,12 @@ socket.on("id", (id) => {
 
 //============================================================= User Inputs ========================================================
 
-
-// Buy
-function buy(itemId){
-    let quantity = document.getElementById("buy_" + itemId).value;
-    socket.emit("Buy", itemId, quantity);
-}
-// Sell
-function sell(itemId){
-    let quantity = document.getElementById("sell_" + itemId).value;
-    socket.emit("Sell", itemId, quantity);
-}
-
 // Player Change Prices
-function changePrice(itemId, priceOffset){
-    socket.emit("Player Change Item Price", itemId, priceOffset);
+function changePrice(itemId, newPrice){
+    socket.emit("Player Change Item Price", itemId, newPrice);
 }
 
-// Player Change Prices
+// Player Place Bid
 function bid(wholesaleID){
     let bid = document.getElementById("bid_" + wholesaleID).value;
     socket.emit("Player Bid", wholesaleID, bid);
@@ -85,12 +73,36 @@ socket.on("Failure", (failureMsg) => {
     alert(failureMsg);
 });
 
+// Server Down
+socket.on("disconnect", () =>{
+    document.body.innerHTML = "<h1>Connection lost</h1> <div>Please try to reload the page later</div>";
+    socket.disconnect();
+});
+
 
 //============================================================= Server Updates ========================================================
 
+// Ping Player Item
+socket.on("Ping Player Item", (item) => {
+    let inventory_item_row = document.getElementById("item_" + item.id);
+    let original_color = inventory_item_row.style.backgroundColor;
+
+
+    inventory_item_row.style.transition = "none";
+    inventory_item_row.style.backgroundColor = "yellow";
+
+    setTimeout(() => {
+        inventory_item_row.style.transition = "background-color linear 1s";
+        inventory_item_row.style.backgroundColor = original_color;
+
+    }, 1000);
+});
 
 // Update Player Infos
 socket.on("Update Player", (player) => {
+    let pseudo_ui = document.getElementById("pseudo_ui");
+    pseudo_ui.textContent = player.pseudo;
+
     // Get Money Display UI
     let moneyUi = document.getElementById("money_ui");
     // Update Value
@@ -109,6 +121,7 @@ socket.on("Update Player", (player) => {
 
         // Create a new row
         let inventoryItemRow = newInventoryUi.insertRow();
+        inventoryItemRow.id = "item_" + itemId;
 
         // Create the cells
         let itemNameCell = inventoryItemRow.insertCell();
@@ -119,7 +132,7 @@ socket.on("Update Player", (player) => {
         itemNameCell.textContent = slot.item.name;
         itemQuantityCell.textContent = slot.quantity;
 
-        itemPriceCell.innerHTML = slot.price + " <button onclick='changePrice(" + itemId + ", " + 1 + ")'>+</button><button onclick='changePrice(" + itemId + ", " + -1 + ")'>-</button>";
+        itemPriceCell.innerHTML = "<input type='number' min='0' value=" + slot.price + " onchange='changePrice(" + itemId + ", this.value)'>";
     }
 
     // Switch the old UI with the new one
@@ -340,8 +353,14 @@ socket.on("Update Wholesales", (wholesales_list) => {
             // Create Header Row
             let item_list_table_head_row = item_list_table_head.insertRow();
             // Add two Header Cells ("Item Name" | "Quantity")
-            item_list_table_head_row.insertCell().textContent = "Item Name";
-            item_list_table_head_row.insertCell().textContent = "Quantity";
+            let item_name_header_cell = document.createElement("th");
+            item_name_header_cell.textContent = "Item Name";
+            let item_quantity_header_cell = document.createElement("th");
+            item_quantity_header_cell.textContent = "Quantity";
+
+            // Add the two Header Cells to Header Row
+            item_list_table_head_row.appendChild(item_name_header_cell);
+            item_list_table_head_row.appendChild(item_quantity_header_cell);
 
             // Add Table Header to Item List Table
             item_list_table.appendChild(item_list_table_head);
@@ -374,8 +393,14 @@ socket.on("Update Wholesales", (wholesales_list) => {
             // Create Header Row
             let bid_list_table_head_row = bid_list_table_head.insertRow();
             // Add two Header Cells ("Player" | "Bid")
-            bid_list_table_head_row.insertCell().textContent = "Player";
-            bid_list_table_head_row.insertCell().textContent = "Bid";
+            let player_name_header_cell = document.createElement("th");
+            player_name_header_cell.textContent = "Player";
+            let player_bid_header_cell = document.createElement("th");
+            player_bid_header_cell.textContent = "Bid";
+
+            // Add the two Header Cells to Header Row
+            bid_list_table_head_row.appendChild(player_name_header_cell);
+            bid_list_table_head_row.appendChild(player_bid_header_cell);
 
             // Add Table Header to Bid List Table
             bid_list_table.appendChild(bid_list_table_head);
