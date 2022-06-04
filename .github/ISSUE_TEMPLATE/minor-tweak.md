@@ -1,8 +1,8 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Minor tweak
+about: Suggest a tweak for existing functionnality
 title: ''
-labels: New Feature
+labels: Tweak and Enhancement
 assignees: ''
 
 ---
