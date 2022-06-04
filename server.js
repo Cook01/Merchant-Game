@@ -141,7 +141,7 @@ io.on("connection", (socket) => {
 
         // === FOR DEBUG ONLY ===
         // for(let i in item_list)
-        //     new_player.inventory.addItem(item_list[i], 10, 0);
+        //     new_player.inventory.addItem(item_list[i], 10, 10);
 
         // new_player.update();
         // ======================
@@ -419,13 +419,13 @@ setInterval(() => {
         // Create new Wholesale and push it to Wholesale List
         wholesale_list.push(Wholesale.generateRandomWholesale(id, item_list, despawn_timer));
 
-        // Reset Cooldown
-        wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
-
         // Update the Wholesale List
         updateWholesales();
         // Server Log
         console.log("Wholesale - NEW");
+
+        // Reset Cooldown
+        wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
     } else {
         // Decrement Spawn Timer
         wholesale_spawn_cooldown--;

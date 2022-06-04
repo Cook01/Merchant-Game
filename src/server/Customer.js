@@ -1,4 +1,5 @@
 import { Random } from "../utils/Random.js";
+import _ from "lodash";
 
 export class Customer{
     constructor(money, shopping_timer, despawn_timer){
@@ -64,53 +65,97 @@ export class Customer{
     }
 
     // Customer Shopping action
-    shop(player_list){
-        // For each Item in wishlist
-        for(let element_id in this.wishlist){
-            // Int Price List
-            let price_list = []
-            // Get the Item
-            let item = this.wishlist[element_id].item;
+    shop(player_list, q1 = 1, q2 = 1, q3 = 0.5){
+        
+        let simulation = [];
 
-            // For each Player
-            for(let playerId in player_list){
-                // Get Player
-                let player = player_list[playerId];
-                // Get Price for the Item in Player Inventory
-                let item_price = player.inventory.getPrice(item);
+        let total_wished_item = 0;
 
-                // If Price exist (Payer do Sell the Item)
-                if(item_price != -1){
-                    // Add new entry in Price List
-                    price_list.push({
-                        "player": player,
-                        "price": item_price
-                    });
+        for(let i in this.wishlist){
+            total_wished_item += this.wishlist[i].quantity;
+        }
+
+
+        for(let i in player_list){
+            let player_inventory = []
+
+            let customer_clone = _.cloneDeep(this);
+
+            let total_bought_item = 0;
+            let customer_bought_items = {};
+
+            for(let j in player_list[i].inventory.slot_list){
+                player_inventory.push(player_list[i].inventory.slot_list[j]);
+            }
+            player_inventory.sort((a, b) => ((a.price > b.price) ? 1 : -1));
+
+            let can_still_buy = false;
+    
+            do {
+                can_still_buy = false;
+
+                for(let slot of player_inventory){
+                    if(customer_clone.wishlist[slot.item.id] != undefined){
+                        if(slot.price <= customer_clone.money){
+                            customer_clone.money -= slot.price;
+                            total_bought_item ++;
+
+                            if(customer_bought_items[slot.item.id] != undefined){
+                                customer_bought_items[slot.item.id].quantity++;
+                            } else {
+                                customer_bought_items[slot.item.id] = {
+                                    item : slot.item,
+                                    quantity: 1
+                                };
+                            }
+
+                            customer_clone.removeItemFromWishlist(slot.item, 1);
+                            can_still_buy = true;
+
+                            break;
+                        }
+                    }
+                }
+            } while(can_still_buy);
+
+            let quantity_score = (total_bought_item - 0) / (total_wished_item - 0); // (x - min) / (max - min)
+            let diversity_score = (Object.keys(customer_bought_items).length - 0) / (Object.keys(this.wishlist).length - 0); // (x - min) / (max - min)
+            let prices_score = (customer_clone.money - 0) / (this.money - 0); // (x - min) / (max - min)
+
+            let final_score = quantity_score * q1 + diversity_score * q2 + prices_score * q3;
+
+            simulation.push({
+                player_id: i,
+                score: final_score
+            });
+        }
+
+        simulation.sort((a, b) => ((a.score < b.score) ? 1 : -1));
+
+        let player_selected = player_list[simulation[0].player_id];
+        let player_inventory = [];
+
+        for(let j in player_selected.inventory.slot_list){
+            player_inventory.push(player_selected.inventory.slot_list[j]);
+        }
+        player_inventory.sort((a, b) => ((a.price > b.price) ? 1 : -1));
+
+        let can_still_buy = false;
+
+        do {
+            can_still_buy = false;
+
+            for(let slot of player_inventory){
+                if(this.wishlist[slot.item.id] != undefined){
+                    if(slot.price <= this.money){
+                        this.buy(player_selected, slot.item, 1);
+                        can_still_buy = true;
+
+                        break;
+                    }
                 }
             }
-
-            // Sort Price List (cheapest first)
-            price_list.sort((a, b) => (a.price > b.price) ? 1 : -1);
-
-            // If Price List have any entry (at least one Player sell the Item)
-            if(price_list.length > 0){
-                // Get the first entry from Price List (cheapest)
-                let price_entry = price_list[0];
-
-                // Get selling Player
-                let player = price_entry.player;
-                // Get selling Price
-                let price = price_entry.price;
-
-                // Quatity = Min between quantity wished and quantity avalable
-                let quantity = Math.min(this.wishlist[element_id].quantity, player.inventory.getQuantity(item));
-                // Quantity = Min between previous result and what the budget allow
-                quantity = Math.min(quantity, Math.floor(this.money / price));
-
-                // Buy the Item
-                this.buy(player, item, quantity);
-            }
-        }
+        } while(can_still_buy);
     }
 
 
