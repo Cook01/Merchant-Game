@@ -440,6 +440,16 @@ socket.on("Update Wholesales", (wholesales_list) => {
             bid_input_field.setAttribute("value", "0");
             // Set Bid Input Field id
             bid_input_field.id = "bid_" + wholesale.id;
+            // Add an Event Listener for KeyPress
+            bid_input_field.addEventListener("keypress", (event) => {
+                // If Key pressed is "Enter"
+                if(event.key === "Enter"){
+                    // Cancel the default action, if needed
+                    event.preventDefault();
+                    // Add Bid for Wholesale
+                    bid(wholesale.id);
+                }
+            });
 
             // Add Bid Input Field to Bid Input Div
             bid_input_ui.appendChild(bid_input_field);
