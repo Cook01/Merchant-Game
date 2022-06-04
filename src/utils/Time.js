@@ -13,4 +13,8 @@ export class Time{
             return minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
         }
     }
+
+    static getSeconds(seconds = 0, minutes = 0, hours = 0){
+        return (seconds + (minutes * 60) + (hours * 60 * 60));
+    }
 }
