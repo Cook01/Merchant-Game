@@ -17,9 +17,9 @@ export class Player{
     }
 
     // Player change the Price of an Item
-    changePrice(item, newPrice){
+    changePrice(item, new_price){
         // Change the Price of the Item in the Inventory
-        this.inventory.setPrice(item, newPrice);
+        this.inventory.setPrice(item, new_price);
         // Update Player infos
         this.update();
     }

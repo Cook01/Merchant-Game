@@ -39,7 +39,7 @@ function haiku(){
 let pseudo = prompt("Choose a nickname", haiku());
 
 // Init Player ID
-let myId = -1;
+let my_id = -1;
 
 
 //============================================================= Register New Player to Server ========================================================
@@ -50,27 +50,27 @@ socket.emit("New Player", pseudo);
 
 // Get Player ID
 socket.on("id", (id) => {
-    myId = id;
+    my_id = id;
 });
 
 
 //============================================================= User Inputs ========================================================
 
 // Player Change Prices
-function changePrice(itemId, newPrice){
-    socket.emit("Player Change Item Price", itemId, newPrice);
+function changePrice(item_id, new_price){
+    socket.emit("Player Change Item Price", item_id, new_price);
 }
 
 // Player Place Bid
-function bid(wholesaleID){
-    let bid = document.getElementById("bid_" + wholesaleID).value;
-    socket.emit("Player Bid", wholesaleID, bid);
+function bid(wholesale_id){
+    let bid = document.getElementById("bid_" + wholesale_id).value;
+    socket.emit("Player Bid", wholesale_id, bid);
 }
 
 
 // Display Transactions Failures
-socket.on("Failure", (failureMsg) => {
-    alert(failureMsg);
+socket.on("Failure", (failure_message) => {
+    alert(failure_message);
 });
 
 // Server Down
@@ -119,9 +119,9 @@ socket.on("Update Player", (player) => {
     new_inventory_ui.id = "inventory_ui";
 
     // For each Inventory Slot in Inventory
-    for(let item_id in player.inventory.slotList){
+    for(let item_id in player.inventory.slot_list){
         // Get the Item
-        let slot = player.inventory.slotList[item_id];
+        let slot = player.inventory.slot_list[item_id];
 
         // Create a new row
         let inventory_item_row = new_inventory_ui.insertRow();
@@ -159,86 +159,86 @@ socket.on("Update Player", (player) => {
 //=============================================================
 
 // Update LeaderBoard
-// socket.on("Update LeaderBoard", (leaderBoard) => {
+// socket.on("Update LeaderBoard", (leader_board) => {
 
 //     // Get the current Score UI Element
-//     let oldScoreUi = document.getElementById("score_ui");
+//     let old_score_ui = document.getElementById("score_ui");
 
 //     // Create the new UI Element
-//     let newScoreUi = document.createElement('tbody');
-//     newScoreUi.id = "score_ui";
+//     let new_score_ui = document.createElement('tbody');
+//     new_score_ui.id = "score_ui";
 
 //     // For each entry of LeaderBoard
-//     for(let id in leaderBoard){
+//     for(let id in leader_board){
 //         // Get Player
-//         let player = leaderBoard[id];
+//         let player = leader_board[id];
 
 //         // Create a new row
-//         let playerRow = newScoreUi.insertRow();
+//         let player_row = new_score_ui.insertRow();
 
 //         // Create the cells
-//         let playerPseudoCell = playerRow.insertCell();
-//         let playerScoreCell = playerRow.insertCell();
+//         let player_pseudo_cell = player_row.insertCell();
+//         let player_score_cell = player_row.insertCell();
 
 //         // Print the player infos
-//         playerPseudoCell.textContent = player.pseudo;
-//         playerScoreCell.textContent = player.score;
+//         player_pseudo_cell.textContent = player.pseudo;
+//         player_score_cell.textContent = player.score;
 
 //         // If the row is for current player
-//         if(id == myId)
+//         if(id == my_id)
 //             // Set CSS Style to bold blue in the Players tab
-//             playerRow.setAttribute("style", "color:blue; font-weight: bold;");
+//             player_row.setAttribute("style", "color:blue; font-weight: bold;");
 //     }
 
 //     // Switch the old UI with the new one
-//     oldScoreUi.parentNode.replaceChild(newScoreUi, oldScoreUi);
+//     old_score_ui.parentNode.replaceChild(new_score_ui, old_score_ui);
 // });
 
 //=============================================================
 
 // Update the Customers
-socket.on("Update Customers", (customerList) => {
+socket.on("Update Customers", (customer_list) => {
     // Get the current Customers UI Element
-    let oldCustomersUi = document.getElementById("customers_ui");
+    let old_customers_ui = document.getElementById("customers_ui");
     // Create the new Customers UI Element
-    let newCustomersUi = document.createElement("div");
-    newCustomersUi.id = "customers_ui";
+    let new_customers_ui = document.createElement("div");
+    new_customers_ui.id = "customers_ui";
 
     // For each Customer in Customer List
-    for(let customer of customerList){
+    for(let customer of customer_list){
         // New table
-        let customerTableHTML = "<table>";
+        let customer_table_html = "<table>";
         // Set caption
-        customerTableHTML += "<caption>Budget : <span style='font-weight: bold'>" + customer.money + "</span></caption>";
+        customer_table_html += "<caption>Budget : <span style='font-weight: bold'>" + customer.money + "</span></caption>";
 
         // Set the Header
-        customerTableHTML += "<thead><tr><th>Item Name</th><th>Quantity</th></tr></thead>";
+        customer_table_html += "<thead><tr><th>Item Name</th><th>Quantity</th></tr></thead>";
         // New tBody
-        customerTableHTML += "<tbody>"
+        customer_table_html += "<tbody>"
         // Foreach item in wishlist
-        for(let elementId in customer.wishlist){
-            const whishlistElement = customer.wishlist[elementId];
+        for(let element_id in customer.wishlist){
+            const whishlist_element = customer.wishlist[element_id];
 
             // Create a new row
-            customerTableHTML += "<tr>";
+            customer_table_html += "<tr>";
 
             // Create the cells
-            customerTableHTML += "<td>" + whishlistElement.item.name + "</td>";
-            customerTableHTML += "<td>" + whishlistElement.quantity + "</td>";
+            customer_table_html += "<td>" + whishlist_element.item.name + "</td>";
+            customer_table_html += "<td>" + whishlist_element.quantity + "</td>";
 
             // Close the row
-            customerTableHTML += "</tr>";
+            customer_table_html += "</tr>";
         }
         // Close the tBody
-        customerTableHTML += "</tbody>";
+        customer_table_html += "</tbody>";
         // Close the Table
-        customerTableHTML += "</table>";
+        customer_table_html += "</table>";
 
-        newCustomersUi.innerHTML += customerTableHTML;
+        new_customers_ui.innerHTML += customer_table_html;
     }
 
     // Switch the old UI with the new one
-    oldCustomersUi.parentNode.replaceChild(newCustomersUi, oldCustomersUi);
+    old_customers_ui.parentNode.replaceChild(new_customers_ui, old_customers_ui);
 });
 
 //=============================================================
@@ -296,15 +296,15 @@ socket.on("Update Wholesales", (wholesales_list) => {
 
             // Update Bids List
             // Loop until nuber of rows == number of bids
-            while(bid_list_table.rows.length - 1 != wholesale.bidList.length){
+            while(bid_list_table.rows.length - 1 != wholesale.bid_list.length){
 
                 // If more rows in Table than bids in Bid List
-                if(bid_list_table.rows.length - 1 > wholesale.bidList.length){
+                if(bid_list_table.rows.length - 1 > wholesale.bid_list.length){
                     // Remove Rows
                     bid_list_table.deleteRow(-1);
 
                 // If less rows in Table than Items in Wholesale
-                } else if(bid_list_table.rows.length - 1 < wholesale.bidList.length){
+                } else if(bid_list_table.rows.length - 1 < wholesale.bid_list.length){
                     // Get Table Body
                     let table_body = bid_list_table.getElementsByTagName("tbody")[0];
                     // Add Rows
@@ -316,15 +316,15 @@ socket.on("Update Wholesales", (wholesales_list) => {
             }
 
             // Sort Bid List so best Bid is first
-            wholesale.bidList.sort((a, b) => (a.money < b. money) ? 1 : -1);
+            wholesale.bid_list.sort((a, b) => (a.money < b. money) ? 1 : -1);
 
             let row_index = 0;
 
             // Update Bids Infos
-            for(let bid of wholesale.bidList){
+            for(let bid of wholesale.bid_list){
                 row_index++;
 
-                if(bid.player.id === myId){
+                if(bid.player.id === my_id){
                     bid_list_table.rows[row_index].style.color = "blue";
                     bid_list_table.rows[row_index].style.fontWeight = "bold";
                 } else {
@@ -418,11 +418,11 @@ socket.on("Update Wholesales", (wholesales_list) => {
             let bid_list_table_body = document.createElement("tbody");
 
             // For each Bids
-            for(let bid of wholesale.bidList){
+            for(let bid of wholesale.bid_list){
                 // Create a Row
                 let bid_list_table_body_row = bid_list_table_body.insertRow();
 
-                if(bid.player.id == myId){
+                if(bid.player.id == my_id){
                     bid_list_table_body_row.style.color = "blue";
                     bid_list_table_body_row.style.fontWeight = "bold";
                 } else {

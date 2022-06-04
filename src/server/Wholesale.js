@@ -7,7 +7,7 @@ export class Wholesale{
         this.despawn_timer = despawn_timer;
 
         this.item_list = {};
-        this.bidList = [];
+        this.bid_list = [];
     }
 
     // Add Item to Wholesale Item List
@@ -50,53 +50,53 @@ export class Wholesale{
     // Add (or Update) a Bid to the Wholesale
     addBid(player, money){
         // Get Player Money
-        let moneyDisp = player.money;
+        let money_usable = player.money;
         // Player has no yet been found in the Bid List
-        let playerFound = false;
+        let player_found = false;
 
         // For each Bid in Bid List
-        for(let i in this.bidList){
+        for(let i in this.bid_list){
             // If Player is the same
-            if(this.bidList[i].player.getID() === player.getID()){
+            if(this.bid_list[i].player.getID() === player.getID()){
                 // Add Bid to Player's usable Money
-                moneyDisp += parseInt(this.bidList[i].money);
+                money_usable += parseInt(this.bid_list[i].money);
 
                 // Check that the Bid is <= usable Money
-                if(money > moneyDisp)
-                    money = moneyDisp;
+                if(money > money_usable)
+                    money = money_usable;
 
                 // Change the Bid for that Player
-                this.bidList[i].changeBid(money);
+                this.bid_list[i].changeBid(money);
                 // Player has been found
-                playerFound = true;
+                player_found = true;
 
                 // If new Bid <= 0 : Remove it from Bid List (Player has exit the Bidding)
-                if(this.bidList[i].money <= 0)
-                    this.bidList.splice(i, 1);
+                if(this.bid_list[i].money <= 0)
+                    this.bid_list.splice(i, 1);
             }
         }
 
         // If Player has not been found (New Bid)
-        if(!playerFound){
+        if(!player_found){
             // Check that the Bid is <= usable Money
-            if(money > moneyDisp)
-                money = moneyDisp;
+            if(money > money_usable)
+                money = money_usable;
 
             // If new Bid > 0 : Add the new Bid
             if(money > 0)
-                this.bidList.push(new Bid(player, money));
+                this.bid_list.push(new Bid(player, money));
         }
     }
 
     // End the Bidding for this Wholesale an Select the Winner
     endBid(){
         // If there is at least one Bid
-        if(this.bidList.length > 0){
+        if(this.bid_list.length > 0){
             // Sort the Bid List (Best Bid is first)
-            this.bidList.sort((a, b) => (a.money < b.money) ? 1 : -1);
+            this.bid_list.sort((a, b) => (a.money < b.money) ? 1 : -1);
 
             // Get the First Bid (the Best one = Winner)
-            let winner = this.bidList.splice(0, 1)[0];
+            let winner = this.bid_list.splice(0, 1)[0];
             
             // For each Item in Wholesale Item List
             for(let i in this.item_list){
@@ -107,7 +107,7 @@ export class Wholesale{
             winner.player.update();
 
             // For each other Bids (Loosers)
-            for(let bid of this.bidList){
+            for(let bid of this.bid_list){
                 // Refund the Bid
                 bid.player.money += parseInt(bid.money);
                 // Update the Player

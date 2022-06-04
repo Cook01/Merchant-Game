@@ -88,17 +88,17 @@ server.listen(PORT, function(){
 
 
 // List of Items
-let itemList = {};
+let item_list = {};
 // Read Item List from JSON Data file
 for(let item of JSON_ITEMS){
-    itemList[item.id] = (new Item(item.id, item.name));
+    item_list[item.id] = (new Item(item.id, item.name));
 }
 
 // List of Players
-let playerList = {};
+let player_list = {};
 
 // List of Customers
-let customerList = [];
+let customer_list = [];
 
 
 // === FOR DEBUG ONLY ===
@@ -110,15 +110,15 @@ let customerList = [];
 // let new_customer = new Customer(Random.uniformInt(50, 100), shopping_timer, despawn_timer);
 
 // // Generate random wishlist
-// new_customer.generateRandomWishlist(itemList);
+// new_customer.generateRandomWishlist(item_list);
 
 // // Add new Customer to Customer List
-// customerList.push(new_customer);
+// customer_list.push(new_customer);
 // ======================
 
 
 // List of Wholesales
-let wholesaleList = [];
+let wholesale_list = [];
 
 
 //============================================================= Player Interactions ========================================================
@@ -134,16 +134,16 @@ io.on("connection", (socket) => {
         socket.emit("id", socket.id);
 
         // Create new Player
-        let newPlayer = new Player(socket, pseudo, STARTING_MONEY);
+        let new_player = new Player(socket, pseudo, STARTING_MONEY);
         // Add new player to Player List
-        playerList[socket.id] = newPlayer
+        player_list[socket.id] = new_player
 
 
         // === FOR DEBUG ONLY ===
-        // for(let i in itemList)
-        //     newPlayer.inventory.addItem(itemList[i], 10, 0);
+        // for(let i in item_list)
+        //     new_player.inventory.addItem(item_list[i], 10, 0);
 
-        // newPlayer.update();
+        // new_player.update();
         // ======================
 
 
@@ -159,38 +159,53 @@ io.on("connection", (socket) => {
     //=========================== Player Inputs ==================================
 
     // Update Prices
-    socket.on("Player Change Item Price", (itemId, new_price) => {
-        let player = playerList[socket.id];
-        let item = itemList[itemId];
+    socket.on("Player Change Item Price", (item_id, new_price) => {
+        // Get Player
+        let player = player_list[socket.id];
+        // Get Item
+        let item = item_list[item_id];
 
+        // Get New Price
         new_price = parseFloat(new_price);
 
+        // Check if New Price is a number
         if(!isNaN(new_price)){
+            // Round New Price into an Integer
             new_price = Math.round(new_price);
 
+            // Check that New Price >= 0
             if(new_price < 0)
-            new_price = 0;
+                new_price = 0;
 
+            // Change Item Price for New Price
             player.changePrice(item, new_price);
         } else {
+            // Update Player
             player.update();
         }
     });
 
 
     // Player Bid
-    socket.on("Player Bid", (wholesaleID, bid) => {
-        let player = playerList[socket.id];
-        let wholesale = wholesaleList.find((x) => {return x.id == wholesaleID});
+    socket.on("Player Bid", (wholesale_id, bid) => {
+        // Get Player
+        let player = player_list[socket.id];
+        // Get Wholesale
+        let wholesale = wholesale_list.find((x) => {return x.id == wholesale_id});
 
+        // Get Bid
         bid = parseFloat(bid);
 
+        // Check if Bid is a number
         if(!isNaN(bid)){
+            // Round Bid into an Integer
             bid = Math.round(bid);
 
+            // Check that Bid >= 0
             if(bid < 0)
                 bid = 0;
 
+            // I Wholesale exist : Add Bid
             if(wholesale != undefined)
                 wholesale.addBid(player, bid);
         }
@@ -209,15 +224,19 @@ io.on("connection", (socket) => {
 
     socket.on('disconnect', () => {
         // If Player ID exist
-        if(playerList[socket.id]){
+        if(player_list[socket.id]){
             // Remove Player from Player List
-            delete playerList[socket.id];
+            delete player_list[socket.id];
 
             // Remove Player from Wholesales Bids
-            for(let wholesale of wholesaleList){
-                for(let i in wholesale.bidList){
-                    if(wholesale.bidList[i].player.getID() == socket.id){
-                        wholesale.bidList.splice(i, 1);
+            // For each Wholesale
+            for(let wholesale of wholesale_list){
+                // For each Bid
+                for(let i in wholesale.bid_list){
+                    // If Bid is from Player
+                    if(wholesale.bid_list[i].player.getID() == socket.id){
+                        // Remove Bid
+                        wholesale.bid_list.splice(i, 1);
                     }
                 }
             }
@@ -239,18 +258,18 @@ io.on("connection", (socket) => {
 // Update LeaderBoard
 // function updateLeaderBoard(){
 //     // Init new LeaderBoard
-//     let leaderBoard = {};
+//     let leader_board = {};
 
 //     // Add every players (Score = Money, TBD)
-//     for(let id in playerList){
-//         leaderBoard[id] = {
-//             pseudo: playerList[id].pseudo,
-//             score: playerList[id].money
+//     for(let id in player_list){
+//         leader_board[id] = {
+//             pseudo: player_list[id].pseudo,
+//             score: player_list[id].money
 //         }
 //     }
 
 //     // Broadcast LeaderBoard
-//     io.emit("Update LeaderBoard", leaderBoard);
+//     io.emit("Update LeaderBoard", leader_board);
 // }
 
 // Update Customers
@@ -260,7 +279,7 @@ function updateCustomers(){
     let customer_list_sendable =  [];
     
     // For each Customer in Customers List
-    for(let customer of customerList){
+    for(let customer of customer_list){
         // Deep Clone Customer
         let customer_sendable = _.cloneDeep(customer);
 
@@ -286,16 +305,16 @@ function updateWholesales(){
     let wholesale_list_sendable =  [];
     
     // For each Wholesale in Wholesale List
-    for(let wholesale of wholesaleList){
+    for(let wholesale of wholesale_list){
         // Deep Clone Wholesale
         let wholesale_sendable = _.cloneDeep(wholesale);
 
         // For each Bid in Bid List of the Clone
-        for(let i in wholesale_sendable.bidList){
+        for(let i in wholesale_sendable.bid_list){
             // Stock the Player ID
-            wholesale_sendable.bidList[i].player.id = wholesale_sendable.bidList[i].player.getID();
+            wholesale_sendable.bid_list[i].player.id = wholesale_sendable.bid_list[i].player.getID();
             // Remove the Socket
-            delete wholesale_sendable.bidList[i].player.socket;
+            delete wholesale_sendable.bid_list[i].player.socket;
         }
 
         // Remove the Despawn Timer
@@ -332,10 +351,10 @@ setInterval(() => {
         let new_customer = new Customer(Random.uniformInt(50, 100), shopping_timer, despawn_timer);
 
         // Generate random wishlist
-        new_customer.generateRandomWishlist(itemList);
+        new_customer.generateRandomWishlist(item_list);
 
         // Add new Customer to Customer List
-        customerList.push(new_customer);
+        customer_list.push(new_customer);
 
         // Update Customers
         updateCustomers();
@@ -351,13 +370,13 @@ setInterval(() => {
 
     // Handle Customer Actions (Shopping and Despawn)
     // For each Customer
-    for(let i in customerList){
+    for(let i in customer_list){
 
         // Shopping
         // If Shopping Timer has ended
-        if(customerList[i].shopping_timer <= 0){
+        if(customer_list[i].shopping_timer <= 0){
             // Customer Shop
-            customerList[i].shop(playerList);
+            customer_list[i].shop(player_list);
 
             // Update Customers
             updateCustomers();
@@ -365,18 +384,18 @@ setInterval(() => {
             console.log("Customer - SHOPPING");
 
             // Reset Shoping Timer
-            customerList[i].shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
+            customer_list[i].shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
         } else {
             // Decrement Shoping Timer
-            customerList[i].shopping_timer--;
+            customer_list[i].shopping_timer--;
         }
 
 
         // Despawn
         // If Despawn Timer has ended OR no more Items in Wishlist
-        if(customerList[i].despawn_timer <= 0 || Object.keys(customerList[i].wishlist).length == 0){
+        if(customer_list[i].despawn_timer <= 0 || Object.keys(customer_list[i].wishlist).length == 0){
             // Remove Customer from List
-            customerList.splice(i, 1);
+            customer_list.splice(i, 1);
 
             // Update Customers
             updateCustomers();
@@ -384,7 +403,7 @@ setInterval(() => {
             console.log("Customer - LEAVE");
         } else {
             // Decrement Despawn Timer
-            customerList[i].despawn_timer--;
+            customer_list[i].despawn_timer--;
         }
     }
 
@@ -398,7 +417,7 @@ setInterval(() => {
         // Generate deswpan rate
         let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN, WHOLESALE_DESPAWN_RATE.STD_DEV);
         // Create new Wholesale and push it to Wholesale List
-        wholesaleList.push(Wholesale.generateRandomWholesale(id, itemList, despawn_timer));
+        wholesale_list.push(Wholesale.generateRandomWholesale(id, item_list, despawn_timer));
 
         // Reset Cooldown
         wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
@@ -414,18 +433,18 @@ setInterval(() => {
 
     // Despawn ended Wholesales
     // For each Wholesale
-    for(let i in wholesaleList){
+    for(let i in wholesale_list){
         // If Despawn Timer has ended
-        if(wholesaleList[i].despawn_timer <= 0){
+        if(wholesale_list[i].despawn_timer <= 0){
             // End the Bidding
-            wholesaleList[i].endBid();
+            wholesale_list[i].endBid();
 
             // Remove the Wholesale
-            wholesaleList.splice(i, 1);
+            wholesale_list.splice(i, 1);
 
             // Update all players
-            for(let i in playerList){
-                playerList[i].update();
+            for(let i in player_list){
+                player_list[i].update();
             }
             
             // Update the Wholesale List
@@ -434,7 +453,7 @@ setInterval(() => {
             console.log("Wholesale - END");
         } else {
             // Decrement the Despawn Timer
-            wholesaleList[i].despawn_timer--;
+            wholesale_list[i].despawn_timer--;
         }
     }
 
