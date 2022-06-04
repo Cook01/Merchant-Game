@@ -1,11 +1,11 @@
-const { Item } = require("./Item");
-const { Player } = require("./Player");
-const { Inventory } = require("./Inventory");
-const { Market } = require("./Market");
-const { Customer } = require("./Customer");
-const { Wholesale } = require("./Wholesale");
+import { Item } from "./Item.js";
+import { Player } from "./Player.js";
+import { Inventory } from "./Inventory.js";
+import { Market } from "./Market.js";
+import { Customer } from "./Customer.js";
+import { Wholesale } from "./Wholesale.js";
 
-module.exports = {
+export {
     Item,
     Player,
     Inventory,

@@ -1,5 +1,7 @@
+import { Random } from "../utils/Random.js";
+
 //============================================================= Wholesale ========================================================
-class Wholesale{
+export class Wholesale{
     constructor(id, item, quantity){
         this.id = id;
 
@@ -12,17 +14,20 @@ class Wholesale{
     }
 
     static generateRandomWholesale(id, itemList){
-        //Generate random item ID
-        let itemListKey = Object.keys(itemList);
-        let rndKeyIndex = Math.floor(Math.random() * itemListKey.length);
-        let rndKey = itemListKey[rndKeyIndex];
+        // //Generate random item ID
+        // let itemListKey = Object.keys(itemList);
 
-        //Get the associated item
-        let rndItem = itemList[rndKey];
+        // let rndKeyIndex = Math.floor(Math.random() * itemListKey.length);
+        // let rndKey = itemListKey[rndKeyIndex];
 
-        let quantity = Math.floor(Math.random() * (10 - 5) + 5)
+        // //Get the associated item
+        // let rndItem = itemList[rndKey];
 
-        return new Wholesale(id, rndItem, quantity);
+        let rnd_item = Random.choose(itemList);
+
+        let quantity = Random.uniformInt(5, 10);
+
+        return new Wholesale(id, rnd_item, quantity);
     }
 
     addBid(player, money){
@@ -91,5 +96,3 @@ class Bid{
         this.player.update();
     }
 }
-
-module.exports = { Wholesale };

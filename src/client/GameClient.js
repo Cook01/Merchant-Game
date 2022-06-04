@@ -1,4 +1,5 @@
 // Dependencies
+import { Random } from "../utils/Random.js";
 let socket = io()
 
 // For test purpose
@@ -8,9 +9,6 @@ socket.on("debug", (data) => {
 
 
 //============================================================= Player Pseudo ========================================================
-
-// Generate a Random default Pseudo
-let random = Math.round(Math.random() * (99 - 1) + 1);
 
 // Change Pseudo
 function haiku(){
@@ -34,7 +32,7 @@ function haiku(){
     "sun", "wood", "dream", "cherry", "tree", "fog", "frost", "voice", "paper",
     "frog", "smoke", "star"];
   
-    return adjs[Math.floor(Math.random() * (adjs.length - 1))] + "_" + nouns[Math.floor(Math.random() * (nouns.length - 1))];
+    return Random.choose(adjs) + "_" + Random.choose(nouns);
 }
 let pseudo = prompt("Choose a nickname", haiku());
 
@@ -226,7 +224,7 @@ socket.on("Update Customers", (customerList) => {
 
 //=============================================================
 
-socket.on("Update Wholesales", (wholesales_list) => {
+socket.on("Update Wholesales", (wholesales_list) => {    
     // Get Wholesales List Container
     let wholesales_container = document.getElementById("wholesales_ui");
 

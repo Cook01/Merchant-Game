@@ -1,6 +1,6 @@
-const { Inventory } = require("./Inventory");
+import { Inventory } from "./Inventory.js";
 
-class Market extends Inventory{
+export class Market extends Inventory{
     constructor(){
         super();
     }
@@ -10,5 +10,3 @@ class Market extends Inventory{
             this.slotList[item.id].remove(quantity);
     }
 }
-
-module.exports = { Market };

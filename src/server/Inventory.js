@@ -1,7 +1,7 @@
 //============================================================= Inventory ========================================================
 
 // Inventory Container contains a list of Inventory Slots
-class Inventory{
+export class Inventory{
     constructor(){
         this.slotList = {};
     }
@@ -112,5 +112,3 @@ class InventorySlot{
         this.price = newPrice;
     }
 }
-
-module.exports = { Inventory };

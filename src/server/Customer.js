@@ -1,4 +1,6 @@
-class Customer{
+import { Random } from "../utils/Random.js";
+
+export class Customer{
     constructor(money = 100, SHOPING_RATE = 1/30){
         this.SHOPING_RATE = SHOPING_RATE;
 
@@ -48,28 +50,27 @@ class Customer{
     // Generate a Random Wishlist
     generateRandomWishlist(itemList){
         //Get list of item IDs
-        let itemListKey = Object.keys(itemList);
+        // let itemListKey = Object.keys(itemList);
 
         //Generate random nb of item to add (between 1 and 2 times Item List length)
-        let nbItems = Math.floor(Math.random() * ((itemListKey.length * 2) - 1) + 1); // Rand * (max - min) + min
+        let nbItems = Random.uniformInt(1, itemList.length * 2);
 
         for(let i = 0; i < nbItems; i++){
-            //Generate random item ID
-            let rndKeyIndex = Math.floor(Math.random() * itemListKey.length);
-            let rndKey = itemListKey[rndKeyIndex];
+            // //Generate random item ID
+            // let rnd_id = Random.choose(itemListKey);
 
             //Get the associated item
-            let rndItem = itemList[rndKey];
+            let rnd_Item = Random.choose(itemList);
 
             //Add 1 or 2 times the item to the wishlist
-            this.addItemToWishlist(rndItem, Math.floor(Math.random() * (2 - 1) + 1));  // Rand * (max - min) + min
+            this.addItemToWishlist(rnd_Item, Random.uniformInt(1, 2));
         }
     }
 
     // Customer Shopping action
     shop(playerList){
         // Randome Shopping Rate
-        if(Math.random() < this.SHOPING_RATE){
+        if(Random.uniform() < this.SHOPING_RATE){
             // Server Log
             console.log("Customer shop");
 
@@ -172,5 +173,3 @@ class WishlistSlot{
             this.quantity = 0;
     }
 }
-
-module.exports = { Customer }

@@ -1,23 +1,37 @@
-// Dependencies
+// Enable "require" usage
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+// Node Dependencies
 const http = require("http");
 const express = require("express");
-const path = require("path");
 const { Server } = require("socket.io");
 const _ = require("lodash");
 
+// Enable __dirname usage
+import { fileURLToPath } from 'url';
+const path = require("path");
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// Import Utils
+import { Random } from "./src/utils/Random.js";
+
 // Game Datas
 const STARTING_MONEY = 100;
-const JSON_ITEMS = require("./src/server/datas/ItemList.json");
+import JSON_ITEMS from "./src/server/datas/ItemList.json" assert {type: "json"};
 
 const CUSTOMER_SPAWN_RATE = 1/(2 * 60); // ~= 2 min
 const CUSTOMER_DESPAWN_RATE = 1/(5 * 60); // ~= 5 min
 
 const WHOLESALE_SPAWN_TIME = 2 * 60; // = 2 min
 
-const { Item } = require("./src/server");
-const { Player } = require("./src/server");
-const { Customer } = require("./src/server");
-const { Wholesale } = require("./src/server");
+// Import Game Modules
+import {
+    Item,
+    Player,
+    Customer,
+    Wholesale
+} from "./src/server/index.js";
 
 // GLOBAL VARIABLES
 const PORT = 5000;
@@ -34,6 +48,7 @@ const io = new Server(server);
 
 // Setup
 app.use("/client", express.static(__dirname + "/src/client"));
+app.use("/utils", express.static(__dirname + "/src/utils"));
 
 // Routing
 app.get("/", function(request, response){
@@ -65,7 +80,7 @@ let customerList = [];
 
 // === FOR DEBUG ONLY ===
 // // Generate new Customer
-// let newCustomer = new Customer(Math.floor(Math.random() * (100 - 50) + 50)); // Rand * (max - min) + min
+// let newCustomer = new Customer(Random.uniformInt(50, 100));
 // // Generate random wishlist
 // newCustomer.generateRandomWishlist(itemList);
 
@@ -221,7 +236,6 @@ function updateWholesales(){
         wholesaleListSendable.push(wholesaleSendable);
     }
 
-
     io.emit("Update Wholesales", wholesaleListSendable);
 }
 
@@ -234,9 +248,9 @@ let wholesaleCooldown = 5;
 setInterval(() => {
 
     // Random Customer spawn
-    if(Math.random() < CUSTOMER_SPAWN_RATE){
+    if(Random.uniform() < CUSTOMER_SPAWN_RATE){
         // Generate new Customer
-        let newCustomer = new Customer(Math.floor(Math.random() * (100 - 50) + 50)); // Rand * (max - min) + min
+        let newCustomer = new Customer(Random.uniformInt(50, 100));
         // Generate random wishlist
         newCustomer.generateRandomWishlist(itemList);
 
@@ -253,7 +267,7 @@ setInterval(() => {
         customerList[i].shop(playerList);
 
         // If Customer finish shopping (or random despawn)
-        if(Object.keys(customerList[i].wishlist).length == 0 || customerList[i].money <= 0 || Math.random() < CUSTOMER_DESPAWN_RATE){
+        if(Object.keys(customerList[i].wishlist).length == 0 || customerList[i].money <= 0 || Random.uniform() < CUSTOMER_DESPAWN_RATE){
             // Server Log
             console.log("Customer leave");
             // Remove Customer from List
