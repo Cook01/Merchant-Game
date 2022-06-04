@@ -1,7 +1,6 @@
-const { Inventory } = require("./Inventory");
-const { Item } = require("./Item");
+import { Inventory } from "./Inventory.js";
 
-class Player{
+export class Player{
     constructor(socket, pseudo, money){
         this.socket = socket;
         this.pseudo = pseudo;
@@ -40,5 +39,3 @@ class Player{
         this.socket.emit("Update Player", player);
     }
 }
-
-module.exports = { Player };
