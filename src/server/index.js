@@ -12,4 +12,4 @@ module.exports = {
     Market,
     Customer,
     Wholesale
-}
+};
