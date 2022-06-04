@@ -40,7 +40,7 @@ class Wholesale{
                 playerFound = true;
 
                 if(this.bidList[i].money == 0)
-                    this.bidList.splice(i);
+                    this.bidList.splice(i, 1);
             }
         }
 
