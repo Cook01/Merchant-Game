@@ -255,14 +255,8 @@ socket.on("Update Wholesales", (wholesales_list) => {
         // 1 - If Wholesale UI exist : Update it
         if(wholesale_ui != null){
             //Get UI elements
-            let timer_ui = document.getElementById("timer_" + wholesale.id);
             let item_list_table = document.getElementById("item_list_" + wholesale.id);
             let bid_list_table = document.getElementById("bid_list_" + wholesale.id);
-
-            //=============================================================
-
-            // Update Timer
-            timer_ui.innerText = Time.displayTime(wholesale.despawn_timer);
 
             //=============================================================
 
@@ -343,21 +337,6 @@ socket.on("Update Wholesales", (wholesales_list) => {
             wholesale_ui.id = "wholesale_" + wholesale.id;
             // Set DIV class
             wholesale_ui.classList.add("wholesale");
-
-            //=============================================================
-
-            // Create Timer
-            let timer_ui = document.createElement("div");
-            // Set DIV id
-            timer_ui.id = "timer_" + wholesale.id;
-            // Set DIV class
-            timer_ui.classList.add("wholesale_timer");
-
-            // Update Timer
-            timer_ui.innerText = Time.displayTime(wholesale.despawn_timer);
-
-            // Add Timer to Wholesale UI
-            wholesale_ui.appendChild(timer_ui);
 
             //=============================================================
 

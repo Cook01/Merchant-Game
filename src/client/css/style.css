@@ -62,7 +62,6 @@ caption {
 .wholesale {
     display: grid;
     grid-template-areas:
-    'wholesale_timer wholesale_timer'
     'item_list bid_list'
     'wholesale_bid_input wholesale_bid_input';
 
@@ -71,16 +70,6 @@ caption {
     padding: 10px;
 
     margin: 0.5%;
-}
-
-.wholesale_timer {
-    grid-area: wholesale_timer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-weight: bold;
 }
 
 .item_list{
