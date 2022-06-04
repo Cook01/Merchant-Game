@@ -2,8 +2,8 @@
 name: Gameplay tweak
 about: Suggest a tweak for existing Gameplay
 title: ''
-labels: ''
-assignees: Cook01
+labels: enhancement
+assignees: ''
 
 ---
 
