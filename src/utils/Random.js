@@ -15,6 +15,10 @@ export class Random{
         return ((z0 * std_dev) + mean);
     }
 
+    static normalInt(mean = 0, std_dev = 1){
+        return Math.round(Random.normal(mean, std_dev));
+    }
+
     static uniform(min = 0, max = 1){
         return ((Math.random() * (max - min)) + min);
     }
