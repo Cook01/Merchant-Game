@@ -134,8 +134,8 @@ export class Customer{
             // Update Player
             player.update();
             
-            // Highlight Sale
-            player.pingItem(item);
+            // // Highlight Sale
+            // player.pingItem(item);
         }
     }
 }

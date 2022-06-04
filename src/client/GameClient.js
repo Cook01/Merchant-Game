@@ -84,20 +84,20 @@ socket.on("disconnect", () =>{
 
 // Ping Player Item
 // TODO
-socket.on("Ping Player Item", (item) => {
-    let inventory_item_row = document.getElementById("item_" + item.id);
-    let original_color = inventory_item_row.style.backgroundColor;
+// socket.on("Ping Player Item", (item) => {
+//     let inventory_item_row = document.getElementById("item_" + item.id);
+//     let original_color = inventory_item_row.style.backgroundColor;
 
 
-    inventory_item_row.style.transition = "none";
-    inventory_item_row.style.backgroundColor = "yellow";
+//     inventory_item_row.style.transition = "none";
+//     inventory_item_row.style.backgroundColor = "yellow";
 
-    setTimeout(() => {
-        inventory_item_row.style.transition = "background-color linear 1s";
-        inventory_item_row.style.backgroundColor = original_color;
+//     setTimeout(() => {
+//         inventory_item_row.style.transition = "background-color linear 1s";
+//         inventory_item_row.style.backgroundColor = original_color;
 
-    }, 1000);
-});
+//     }, 1000);
+// });
 
 // Update Player Infos
 socket.on("Update Player", (player) => {
@@ -243,7 +243,7 @@ socket.on("Update Customers", (customerList) => {
 
 //=============================================================
 
-socket.on("Update Wholesales", (wholesales_list) => {    
+socket.on("Update Wholesales", (wholesales_list) => {
     // Get Wholesales List Container
     let wholesales_container = document.getElementById("wholesales_ui");
 
@@ -261,16 +261,17 @@ socket.on("Update Wholesales", (wholesales_list) => {
             //=============================================================
 
             // Update Item List
+            let item_list_size = Object.keys(wholesale.item_list).length;
             // Loop until nuber of rows == number of items
-            while(item_list_table.rows.length - 1 != 1){
+            while(item_list_table.rows.length - 1 != item_list_size){
 
                 // If more rows in Table than Items in Wholesale
-                if(item_list_table.rows.length - 1 > 1){
+                if(item_list_table.rows.length - 1 > item_list_size){
                     // Remove Rows
                     item_list_table.deleteRow(-1);
 
                 // If less rows in Table than Items in Wholesale
-                } else if(item_list_table.rows.length - 1 < 1){
+                } else if(item_list_table.rows.length - 1 < item_list_size){
                     // Get Table Body
                     let table_body = item_list_table.getElementsByTagName("tbody")[0];
                     // Add Rows
@@ -283,8 +284,13 @@ socket.on("Update Wholesales", (wholesales_list) => {
             }
 
             // Update Item Infos
-            item_list_table.rows[1].cells[0].textContent = wholesale.item.name;
-            item_list_table.rows[1].cells[1].textContent = wholesale.quantity;
+            let j = 1;
+            for(let i in wholesale.item_list){
+                item_list_table.rows[j].cells[0].textContent = wholesale.item_list[i].item.name;
+                item_list_table.rows[j].cells[1].textContent = wholesale.item_list[i].quantity;
+
+                j++;
+            }
 
             //=============================================================
 
@@ -366,11 +372,15 @@ socket.on("Update Wholesales", (wholesales_list) => {
 
             // Create Table Body
             let item_list_table_body = document.createElement("tbody");
-            // Create a Row
-            let item_list_table_body_row = item_list_table_body.insertRow();
-            // Add two Cells (Item Name | Quantity)
-            item_list_table_body_row.insertCell().textContent = wholesale.item.name;
-            item_list_table_body_row.insertCell().textContent = wholesale.quantity;
+
+
+            for(let i in wholesale.item_list){
+                // Create a Row
+                let item_list_table_body_row = item_list_table_body.insertRow();
+                // Add two Cells (Item Name | Quantity)
+                item_list_table_body_row.insertCell().textContent = wholesale.item_list[i].item.name;
+                item_list_table_body_row.insertCell().textContent = wholesale.item_list[i].quantity;
+            }
 
             // Add Table Body to Item List Table
             item_list_table.appendChild(item_list_table_body);

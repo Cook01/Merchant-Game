@@ -340,7 +340,7 @@ setInterval(() => {
         // Update Customers
         updateCustomers();
         // Server Log
-        console.log("New Customer");
+        console.log("Customer - NEW");
 
         // Reset Cooldown
         customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
@@ -362,7 +362,7 @@ setInterval(() => {
             // Update Customers
             updateCustomers();
             // Server Log
-            console.log("Customer Shop");
+            console.log("Customer - SHOPPING");
 
             // Reset Shoping Timer
             customerList[i].shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
@@ -381,7 +381,7 @@ setInterval(() => {
             // Update Customers
             updateCustomers();
             // Server Log
-            console.log("Customer leave");
+            console.log("Customer - LEAVE");
         } else {
             // Decrement Despawn Timer
             customerList[i].despawn_timer--;
@@ -406,7 +406,7 @@ setInterval(() => {
         // Update the Wholesale List
         updateWholesales();
         // Server Log
-        console.log("New Wholesale");
+        console.log("Wholesale - NEW");
     } else {
         // Decrement Spawn Timer
         wholesale_spawn_cooldown--;
@@ -431,7 +431,7 @@ setInterval(() => {
             // Update the Wholesale List
             updateWholesales();
             // Server Log
-            console.log("End Wholesale");
+            console.log("Wholesale - END");
         } else {
             // Decrement the Despawn Timer
             wholesaleList[i].despawn_timer--;
