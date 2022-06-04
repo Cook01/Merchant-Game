@@ -24,10 +24,10 @@ export class Player{
         this.update();
     }
 
-    //TODO
-    pingItem(item){
-        this.socket.emit("Ping Player Item", item);
-    }
+    // TODO
+    // pingItem(item){
+    //     this.socket.emit("Ping Player Item", item);
+    // }
 
     // Update Player infos
     update(){
