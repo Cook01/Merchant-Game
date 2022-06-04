@@ -2,7 +2,7 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-// Node Dependencies
+// Node.js Dependencies
 const http = require("http");
 const express = require("express");
 const { Server } = require("socket.io");
@@ -147,8 +147,9 @@ io.on("connection", (socket) => {
         // ======================
 
 
-        // Update the LeaderBoard
+        // // Update the LeaderBoard
         // updateLeaderBoard();
+
         // Update the Customers
         updateCustomers();
     });
@@ -192,8 +193,13 @@ io.on("connection", (socket) => {
                 wholesale.addBid(player, bid);
         }
 
+        // Update the Player
         player.update();
+
+        // // Update the LeaderBoard
         // updateLeaderBoard();
+
+        // Update the Wholesale List
         updateWholesales();
     });
 
@@ -215,8 +221,10 @@ io.on("connection", (socket) => {
             }
         }
 
-        // Update the LeaderBoard
+        // // Update the LeaderBoard
         // updateLeaderBoard();
+
+        // Update the Wholesale List
         updateWholesales();
     });
 
@@ -251,19 +259,28 @@ function updateCustomers(){
 // Update Wholesale
 function updateWholesales(){
 
+    // Player Object (in Bid List) contain a Socket and can't be send as-is to the Clients
+    // Init an empty array of Sendable Wholesales
     let wholesaleListSendable =  [];
     
+    // For each Wholesale in Wholesale List
     for(let wholesale of wholesaleList){
+        // Deep Clone Wholesale
         let wholesaleSendable = _.cloneDeep(wholesale);
 
+        // For each Bid in Bid List of the Clone
         for(let i in wholesaleSendable.bidList){
+            // Stock the Player ID
             wholesaleSendable.bidList[i].player.id = wholesaleSendable.bidList[i].player.getID();
+            // Remove the Socket
             delete wholesaleSendable.bidList[i].player.socket;
         }
 
+        // Add the Sendable Clone to the new List
         wholesaleListSendable.push(wholesaleSendable);
     }
 
+    // Update the Wholesales infos
     io.emit("Update Wholesales", wholesaleListSendable);
 }
 
@@ -301,7 +318,7 @@ setInterval(() => {
         // Reset Cooldown
         customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
     } else {
-        // Decrement Cooldown Timers
+        // Decrement Spawn Timer
         customer_spawn_cooldown--;
     }
 
@@ -321,7 +338,7 @@ setInterval(() => {
             // Reset Shoping Timer
             customerList[i].shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
         } else {
-            // Decrement Shoping Timers
+            // Decrement Shoping Timer
             customerList[i].shopping_timer--;
         }
 
@@ -335,7 +352,7 @@ setInterval(() => {
             // Server Log
             console.log("Customer leave");
         } else {
-            // Decrement Shoping Timers
+            // Decrement Despawn Timer
             customerList[i].despawn_timer--;
         }
     }
@@ -358,6 +375,7 @@ setInterval(() => {
         // Server Log
         console.log("New Wholesale");
     } else {
+        // Decrement Spawn Timer
         wholesale_spawn_cooldown--;
     }
 
@@ -389,8 +407,10 @@ setInterval(() => {
 
     // Update Customes
     updateCustomers();
-    // Update Leader Board
+
+    // // Update Leader Board
     // updateLeaderBoard();
+
     // Update Wholesale
     updateWholesales();
 }, 1000);

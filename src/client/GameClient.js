@@ -83,6 +83,7 @@ socket.on("disconnect", () =>{
 //============================================================= Server Updates ========================================================
 
 // Ping Player Item
+// TODO
 socket.on("Ping Player Item", (item) => {
     let inventory_item_row = document.getElementById("item_" + item.id);
     let original_color = inventory_item_row.style.backgroundColor;
@@ -100,7 +101,9 @@ socket.on("Ping Player Item", (item) => {
 
 // Update Player Infos
 socket.on("Update Player", (player) => {
+    // Get the Player Pseudo UI
     let pseudo_ui = document.getElementById("pseudo_ui");
+    // Update the Pseudo
     pseudo_ui.textContent = player.pseudo;
 
     // Get Money Display UI
@@ -112,6 +115,7 @@ socket.on("Update Player", (player) => {
     let old_inventory_ui = document.getElementById("inventory_ui");
     // Create the new UI Element
     let new_inventory_ui = document.createElement('tbody');
+    // Set the Inventory UI ID
     new_inventory_ui.id = "inventory_ui";
 
     // For each Inventory Slot in Inventory
@@ -121,6 +125,7 @@ socket.on("Update Player", (player) => {
 
         // Create a new row
         let inventory_item_row = new_inventory_ui.insertRow();
+        // Set the Inventory row ID
         inventory_item_row.id = "item_" + item_id;
 
         // Create the cells
@@ -132,14 +137,18 @@ socket.on("Update Player", (player) => {
         item_name_cell.textContent = slot.item.name;
         item_quantity_cell.textContent = slot.quantity;
 
+        // Create the Price Input Field
         let item_price_input = document.createElement("input");
         item_price_input.setAttribute("type", "number");
         item_price_input.setAttribute("min", "0");
         item_price_input.setAttribute("value", slot.price);
+        // Set OnChange() Listener
         item_price_input.onchange = (() => {
+            // Change the Price
             changePrice(item_id, item_price_input.value);
         });
 
+        // Add the Price Input Field to the Cell
         item_price_cell.appendChild(item_price_input);
     }
 
@@ -494,16 +503,24 @@ socket.on("Update Wholesales", (wholesales_list) => {
     }
 
     // 3 - If Wholesale UI doesn't have matching Wholesale : Remove it
+    // For each Wholesale in the Wholesales List Container
     for(let wholesale_ui of wholesales_container.childNodes){
+        // Get the ID from the UI
         let ui_id = parseInt(wholesale_ui.id.replace("wholesale_", ""));
-
+        
+        // Matching Wholesale has not been found yet
         let wholesale_found = false;
+        // For each Wholesale in the Wholesales List
         for(let wholesale of wholesales_list){
+            // If ID is the same
             if(wholesale.id == ui_id)
+                // Matching Wholesale has been found
                 wholesale_found = true;
         }
 
+        // If no matching Wholesale has been found
         if(!wholesale_found)
+            // Remove the Wholesale UI
             wholesale_ui.remove();
     }
 });

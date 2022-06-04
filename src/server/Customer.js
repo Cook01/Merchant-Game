@@ -42,7 +42,7 @@ export class Customer{
 
                 // If wishlist element quantity is <= 0
                 if(this.wishlist[id].quantity <= 0)
-                    // remove wishlist entry
+                    // Remove wishlist entry
                     delete this.wishlist[id];
             }
         }
@@ -50,20 +50,15 @@ export class Customer{
 
     // Generate a Random Wishlist
     generateRandomWishlist(itemList){
-        //Get list of item IDs
-        // let itemListKey = Object.keys(itemList);
-
-        //Generate random nb of item to add (between 1 and 2 times Item List length)
+        // Generate random nb of item to add (between 1 and 2 times Item List length)
         let nbItems = Random.uniformInt(1, Object.keys(itemList).length * 2);
 
+        // Loop nbItem times
         for(let i = 0; i < nbItems; i++){
-            // //Generate random item ID
-            // let rnd_id = Random.choose(itemListKey);
-
-            //Get the associated item
+            // Get a Random Item from Item List
             let rnd_Item = Random.choose(itemList);
 
-            //Add 1 or 2 times the item to the wishlist
+            // Add 1 or 2 times the item to the wishlist
             this.addItemToWishlist(rnd_Item, Random.uniformInt(1, 2));
         }
     }

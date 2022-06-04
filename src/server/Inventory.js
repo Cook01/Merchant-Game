@@ -8,14 +8,18 @@ export class Inventory{
 
     // Check if Item is in inventory
     hasItem(item){
+        // Item has not been found yet
         let itemfound = false;
 
+        // For each item in the Slot List
         for(let id in this.slotList){
+            // If Item is the same, Item has been found
             if(item.id == id){
                 itemfound = true;
             }
         }
 
+        // Return if Item has been found
         return itemfound;
     }
 
@@ -98,13 +102,14 @@ class InventorySlot{
     remove(quantity){
         this.quantity -= parseInt(quantity);
 
+        // Check that Quantity allways >= 0
         if(this.quantity < 0)
             this.quantity = 0;
     }
 
     // Set the Price of the Inventory Slot
     setPrice(newPrice){
-        // Check if price is OK (>= 0)
+        // Check that price allways >= 0
         if(newPrice < 0)
             newPrice = 0;
 
