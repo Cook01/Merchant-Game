@@ -152,6 +152,8 @@ io.on("connection", (socket) => {
 
         // Update the Customers
         updateCustomers();
+        // Update Wholesale
+        updateWholesales();
     });
 
     //=========================== Player Inputs ==================================
@@ -253,35 +255,58 @@ io.on("connection", (socket) => {
 
 // Update Customers
 function updateCustomers(){
-    io.emit("Update Customers", customerList);
+    // Timers need to be removed to awoid Cheating
+    // Init an empty array of Sendable Customers
+    let customer_list_sendable =  [];
+    
+    // For each Customer in Customers List
+    for(let customer of customerList){
+        // Deep Clone Customer
+        let customer_sendable = _.cloneDeep(customer);
+
+        // Remove the Shopping Timer
+        delete customer_sendable.shopping_timer;
+        // Remove the Despawn Timer
+        delete customer_sendable.despawn_timer;
+
+        // Add the Sendable Clone to the new List
+        customer_list_sendable.push(customer_sendable);
+    }
+
+
+    io.emit("Update Customers", customer_list_sendable);
 }
 
 // Update Wholesale
 function updateWholesales(){
 
     // Player Object (in Bid List) contain a Socket and can't be send as-is to the Clients
+    // Timers need to be removed to awoid Cheating
     // Init an empty array of Sendable Wholesales
-    let wholesaleListSendable =  [];
+    let wholesale_list_sendable =  [];
     
     // For each Wholesale in Wholesale List
     for(let wholesale of wholesaleList){
         // Deep Clone Wholesale
-        let wholesaleSendable = _.cloneDeep(wholesale);
+        let wholesale_sendable = _.cloneDeep(wholesale);
 
         // For each Bid in Bid List of the Clone
-        for(let i in wholesaleSendable.bidList){
+        for(let i in wholesale_sendable.bidList){
             // Stock the Player ID
-            wholesaleSendable.bidList[i].player.id = wholesaleSendable.bidList[i].player.getID();
+            wholesale_sendable.bidList[i].player.id = wholesale_sendable.bidList[i].player.getID();
             // Remove the Socket
-            delete wholesaleSendable.bidList[i].player.socket;
+            delete wholesale_sendable.bidList[i].player.socket;
         }
 
+        // Remove the Despawn Timer
+        delete wholesale_sendable.despawn_timer;
+
         // Add the Sendable Clone to the new List
-        wholesaleListSendable.push(wholesaleSendable);
+        wholesale_list_sendable.push(wholesale_sendable);
     }
 
     // Update the Wholesales infos
-    io.emit("Update Wholesales", wholesaleListSendable);
+    io.emit("Update Wholesales", wholesale_list_sendable);
 }
 
 
@@ -312,6 +337,8 @@ setInterval(() => {
         // Add new Customer to Customer List
         customerList.push(new_customer);
 
+        // Update Customers
+        updateCustomers();
         // Server Log
         console.log("New Customer");
 
@@ -330,8 +357,10 @@ setInterval(() => {
         // If Shopping Timer has ended
         if(customerList[i].shopping_timer <= 0){
             // Customer Shop
-        customerList[i].shop(playerList);
+            customerList[i].shop(playerList);
 
+            // Update Customers
+            updateCustomers();
             // Server Log
             console.log("Customer Shop");
 
@@ -349,6 +378,8 @@ setInterval(() => {
             // Remove Customer from List
             customerList.splice(i, 1);
 
+            // Update Customers
+            updateCustomers();
             // Server Log
             console.log("Customer leave");
         } else {
@@ -372,6 +403,8 @@ setInterval(() => {
         // Reset Cooldown
         wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
 
+        // Update the Wholesale List
+        updateWholesales();
         // Server Log
         console.log("New Wholesale");
     } else {
@@ -395,6 +428,8 @@ setInterval(() => {
                 playerList[i].update();
             }
             
+            // Update the Wholesale List
+            updateWholesales();
             // Server Log
             console.log("End Wholesale");
         } else {
@@ -405,12 +440,6 @@ setInterval(() => {
 
     //=============================================================
 
-    // Update Customes
-    updateCustomers();
-
     // // Update Leader Board
     // updateLeaderBoard();
-
-    // Update Wholesale
-    updateWholesales();
 }, 1000);
