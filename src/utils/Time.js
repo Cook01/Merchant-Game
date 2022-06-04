@@ -1,6 +1,9 @@
 export class Time{
     static displayTime(input){
 
+        if(input < 0)
+            input = 0;
+
         let seconds = Math.floor(input % 60);
         let minutes = Math.floor(input / 60);
         

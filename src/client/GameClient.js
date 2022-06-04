@@ -1,5 +1,7 @@
 // Dependencies
 import { Random } from "../utils/Random.js";
+import { Time } from "../utils/Time.js";
+
 let socket = io()
 
 // For test purpose
@@ -251,9 +253,7 @@ socket.on("Update Wholesales", (wholesales_list) => {
             //=============================================================
 
             // Update Timer
-            let timer_minutes = Math.floor(wholesale.despawn_timer / 60).toString().padStart(2, "0");
-            let timer_seconds = Math.floor(wholesale.despawn_timer % 60).toString().padStart(2, "0");
-            timer_ui.innerText = timer_minutes + ":" + timer_seconds;
+            timer_ui.innerText = Time.displayTime(wholesale.despawn_timer);
 
             //=============================================================
 
@@ -345,9 +345,7 @@ socket.on("Update Wholesales", (wholesales_list) => {
             timer_ui.classList.add("wholesale_timer");
 
             // Update Timer
-            let timer_minutes = Math.floor(wholesale.despawn_timer / 60).toString().padStart(2, "0");
-            let timer_seconds = Math.floor(wholesale.despawn_timer % 60).toString().padStart(2, "0");
-            timer_ui.innerText = timer_minutes + ":" + timer_seconds;
+            timer_ui.innerText = Time.displayTime(wholesale.despawn_timer);
 
             // Add Timer to Wholesale UI
             wholesale_ui.appendChild(timer_ui);
