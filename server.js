@@ -102,13 +102,18 @@ let customerList = [];
 
 
 // === FOR DEBUG ONLY ===
+// // Generate random shopping rate
+// let shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
+// // Generate random despawn rate
+// let despawn_timer = Random.normal(CUSTOMER_DESPAWN_RATE.MEAN, CUSTOMER_DESPAWN_RATE.STD_DEV);
 // // Generate new Customer
-// let newCustomer = new Customer(Random.uniformInt(50, 100));
+// let new_customer = new Customer(Random.uniformInt(50, 100), shopping_timer, despawn_timer);
+
 // // Generate random wishlist
-// newCustomer.generateRandomWishlist(itemList);
+// new_customer.generateRandomWishlist(itemList);
 
 // // Add new Customer to Customer List
-// customerList.push(newCustomer);
+// customerList.push(new_customer);
 // ======================
 
 
@@ -136,7 +141,7 @@ io.on("connection", (socket) => {
 
         // === FOR DEBUG ONLY ===
         // for(let i in itemList)
-        //     newPlayer.inventory.addItem(itemList[i], 10, 10);
+        //     newPlayer.inventory.addItem(itemList[i], 10, 0);
 
         // newPlayer.update();
         // ======================
@@ -267,7 +272,7 @@ function updateWholesales(){
 
 // Init First Spawn Cooldowns
 let customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
-let wholesale_spawn_cooldown = 1;
+let wholesale_spawn_cooldown = Time.getSeconds(1);
 
 // Every seconds
 setInterval(() => {
