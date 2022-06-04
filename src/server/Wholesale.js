@@ -2,18 +2,18 @@ import { Random } from "../utils/Random.js";
 
 //============================================================= Wholesale ========================================================
 export class Wholesale{
-    constructor(id, item, quantity){
+    constructor(id, item, quantity, despawn_timer){
         this.id = id;
 
         this.item = item;
         this.quantity = quantity;
 
-        this.timer = 3 * 60; // 3 min
+        this.despawn_timer = despawn_timer;
 
         this.bidList = [];
     }
 
-    static generateRandomWholesale(id, itemList){
+    static generateRandomWholesale(id, itemList, despawn_timer){
         // //Generate random item ID
         // let itemListKey = Object.keys(itemList);
 
@@ -27,7 +27,7 @@ export class Wholesale{
 
         let quantity = Random.uniformInt(5, 10);
 
-        return new Wholesale(id, rnd_item, quantity);
+        return new Wholesale(id, rnd_item, quantity, despawn_timer);
     }
 
     addBid(player, money){

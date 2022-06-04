@@ -102,39 +102,47 @@ socket.on("Update Player", (player) => {
     pseudo_ui.textContent = player.pseudo;
 
     // Get Money Display UI
-    let moneyUi = document.getElementById("money_ui");
+    let money_ui = document.getElementById("money_ui");
     // Update Value
-    moneyUi.textContent = player.money;
+    money_ui.textContent = player.money;
 
     // Get the current Inventory UI Element
-    let oldInventoryUi = document.getElementById("inventory_ui");
+    let old_inventory_ui = document.getElementById("inventory_ui");
     // Create the new UI Element
-    let newInventoryUi = document.createElement('tbody');
-    newInventoryUi.id = "inventory_ui";
+    let new_inventory_ui = document.createElement('tbody');
+    new_inventory_ui.id = "inventory_ui";
 
     // For each Inventory Slot in Inventory
-    for(let itemId in player.inventory.slotList){
+    for(let item_id in player.inventory.slotList){
         // Get the Item
-        let slot = player.inventory.slotList[itemId];
+        let slot = player.inventory.slotList[item_id];
 
         // Create a new row
-        let inventoryItemRow = newInventoryUi.insertRow();
-        inventoryItemRow.id = "item_" + itemId;
+        let inventory_item_row = new_inventory_ui.insertRow();
+        inventory_item_row.id = "item_" + item_id;
 
         // Create the cells
-        let itemNameCell = inventoryItemRow.insertCell();
-        let itemQuantityCell = inventoryItemRow.insertCell();
-        let itemPriceCell = inventoryItemRow.insertCell();
+        let item_name_cell = inventory_item_row.insertCell();
+        let item_quantity_cell = inventory_item_row.insertCell();
+        let item_price_cell = inventory_item_row.insertCell();
 
         // Print the Item infos
-        itemNameCell.textContent = slot.item.name;
-        itemQuantityCell.textContent = slot.quantity;
+        item_name_cell.textContent = slot.item.name;
+        item_quantity_cell.textContent = slot.quantity;
 
-        itemPriceCell.innerHTML = "<input type='number' min='0' value=" + slot.price + " onchange='changePrice(" + itemId + ", this.value)'>";
+        let item_price_input = document.createElement("input");
+        item_price_input.setAttribute("type", "number");
+        item_price_input.setAttribute("min", "0");
+        item_price_input.setAttribute("value", slot.price);
+        item_price_input.onchange = (() => {
+            changePrice(item_id, item_price_input.value);
+        });
+
+        item_price_cell.appendChild(item_price_input);
     }
 
     // Switch the old UI with the new one
-    oldInventoryUi.parentNode.replaceChild(newInventoryUi, oldInventoryUi);
+    old_inventory_ui.parentNode.replaceChild(new_inventory_ui, old_inventory_ui);
 });
 
 //=============================================================
@@ -236,16 +244,16 @@ socket.on("Update Wholesales", (wholesales_list) => {
         // 1 - If Wholesale UI exist : Update it
         if(wholesale_ui != null){
             //Get UI elements
-            let timer = document.getElementById("timer_" + wholesale.id);
+            let timer_ui = document.getElementById("timer_" + wholesale.id);
             let item_list_table = document.getElementById("item_list_" + wholesale.id);
             let bid_list_table = document.getElementById("bid_list_" + wholesale.id);
 
             //=============================================================
 
             // Update Timer
-            let timer_minutes = Math.floor(wholesale.timer / 60).toString().padStart(2, "0");
-            let timer_seconds = (wholesale.timer % 60).toString().padStart(2, "0");
-            timer.innerText = timer_minutes + ":" + timer_seconds;
+            let timer_minutes = Math.floor(wholesale.despawn_timer / 60).toString().padStart(2, "0");
+            let timer_seconds = Math.floor(wholesale.despawn_timer % 60).toString().padStart(2, "0");
+            timer_ui.innerText = timer_minutes + ":" + timer_seconds;
 
             //=============================================================
 
@@ -330,19 +338,19 @@ socket.on("Update Wholesales", (wholesales_list) => {
             //=============================================================
 
             // Create Timer
-            let timer = document.createElement("div");
+            let timer_ui = document.createElement("div");
             // Set DIV id
-            timer.id = "timer_" + wholesale.id;
+            timer_ui.id = "timer_" + wholesale.id;
             // Set DIV class
-            timer.classList.add("wholesale_timer");
+            timer_ui.classList.add("wholesale_timer");
 
             // Update Timer
-            let timer_minutes = Math.floor(wholesale.timer / 60).toString().padStart(2, "0");
-            let timer_seconds = (wholesale.timer % 60).toString().padStart(2, "0");
-            timer.innerText = timer_minutes + ":" + timer_seconds;
+            let timer_minutes = Math.floor(wholesale.despawn_timer / 60).toString().padStart(2, "0");
+            let timer_seconds = Math.floor(wholesale.despawn_timer % 60).toString().padStart(2, "0");
+            timer_ui.innerText = timer_minutes + ":" + timer_seconds;
 
             // Add Timer to Wholesale UI
-            wholesale_ui.appendChild(timer);
+            wholesale_ui.appendChild(timer_ui);
 
             //=============================================================
 

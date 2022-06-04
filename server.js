@@ -15,15 +15,38 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Import Utils
 import { Random } from "./src/utils/Random.js";
+import { Time } from "./src/utils/Time.js";
 
 // Game Datas
 const STARTING_MONEY = 100;
 import JSON_ITEMS from "./src/server/datas/ItemList.json" assert {type: "json"};
 
-const CUSTOMER_SPAWN_RATE = 1/(2 * 60); // ~= 2 min
-const CUSTOMER_DESPAWN_RATE = 1/(5 * 60); // ~= 5 min
+// Customers spawn rate
+const CUSTOMER_SPAWN_RATE = {
+    MEAN : Time.getSeconds(0, 2), // 2 min
+    STD_DEV : Time.getSeconds(0, 1) // 1 min
+}
+// Customers despawn rate
+const CUSTOMER_SHOPING_RATE = {
+    MEAN : Time.getSeconds(30), // 30 sec
+    STD_DEV : Time.getSeconds(10) // 10 sec
+}
+// Customers despawn rate
+const CUSTOMER_DESPAWN_RATE = {
+    MEAN : Time.getSeconds(0, 5), // 5 min
+    STD_DEV : Time.getSeconds(0, 1) // 1 min
+}
 
-const WHOLESALE_SPAWN_TIME = 2 * 60; // = 2 min
+// Wholesale spawn rate
+const WHOLESALE_SPAWN_RATE = {
+    MEAN : Time.getSeconds(0, 2), // 2 min
+    STD_DEV : Time.getSeconds(0, 1) // 1 min
+}
+// Wholesale despawn rate
+const WHOLESALE_DESPAWN_RATE = {
+    MEAN : Time.getSeconds(0, 3), // 3 min
+    STD_DEV : Time.getSeconds(0, 1) // 1 min
+}
 
 // Import Game Modules
 import {
@@ -242,65 +265,122 @@ function updateWholesales(){
 
 //============================================================= Main Loop ========================================================
 
-let wholesaleCooldown = 5;
+// Init First Spawn Cooldowns
+let customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
+let wholesale_spawn_cooldown = 1;
 
 // Every seconds
 setInterval(() => {
 
-    // Random Customer spawn
-    if(Random.uniform() < CUSTOMER_SPAWN_RATE){
+    //=============================================================
+
+    // Customer spawn
+    // If Customer Spawn Timer has ended
+    if(customer_spawn_cooldown <= 0){
+        // Generate random shopping rate
+        let shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
+        // Generate random despawn rate
+        let despawn_timer = Random.normal(CUSTOMER_DESPAWN_RATE.MEAN, CUSTOMER_DESPAWN_RATE.STD_DEV);
         // Generate new Customer
-        let newCustomer = new Customer(Random.uniformInt(50, 100));
+        let new_customer = new Customer(Random.uniformInt(50, 100), shopping_timer, despawn_timer);
+
         // Generate random wishlist
-        newCustomer.generateRandomWishlist(itemList);
+        new_customer.generateRandomWishlist(itemList);
 
         // Add new Customer to Customer List
-        customerList.push(newCustomer);
+        customerList.push(new_customer);
 
         // Server Log
         console.log("New Customer");
+
+        // Reset Cooldown
+        customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
+    } else {
+        // Decrement Cooldown Timers
+        customer_spawn_cooldown--;
     }
 
+    // Handle Customer Actions (Shopping and Despawn)
     // For each Customer
     for(let i in customerList){
-        // Customer Shopping Action
+
+        // Shopping
+        // If Shopping Timer has ended
+        if(customerList[i].shopping_timer <= 0){
+            // Customer Shop
         customerList[i].shop(playerList);
 
-        // If Customer finish shopping (or random despawn)
-        if(Object.keys(customerList[i].wishlist).length == 0 || customerList[i].money <= 0 || Random.uniform() < CUSTOMER_DESPAWN_RATE){
             // Server Log
-            console.log("Customer leave");
+            console.log("Customer Shop");
+
+            // Reset Shoping Timer
+            customerList[i].shopping_timer = Random.normal(CUSTOMER_SHOPING_RATE.MEAN, CUSTOMER_SHOPING_RATE.STD_DEV);
+        } else {
+            // Decrement Shoping Timers
+            customerList[i].shopping_timer--;
+        }
+
+
+        // Despawn
+        // If Despawn Timer has ended OR no more Items in Wishlist
+        if(customerList[i].despawn_timer <= 0 || Object.keys(customerList[i].wishlist).length == 0){
             // Remove Customer from List
             customerList.splice(i, 1);
+
+            // Server Log
+            console.log("Customer leave");
+        } else {
+            // Decrement Shoping Timers
+            customerList[i].despawn_timer--;
         }
     }
 
-    wholesaleCooldown--;
+    //=============================================================
 
-    if(wholesaleCooldown <= 0){
+    // Wholesale Spawn
+    // If Wholesale Spawn Timer has ended
+    if(wholesale_spawn_cooldown <= 0){
+        // Generate Wholesale ID
         let id = new Date().getTime();
-        wholesaleList.push(Wholesale.generateRandomWholesale(id, itemList));
+        // Generate deswpan rate
+        let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN, WHOLESALE_DESPAWN_RATE.STD_DEV);
+        // Create new Wholesale and push it to Wholesale List
+        wholesaleList.push(Wholesale.generateRandomWholesale(id, itemList, despawn_timer));
 
-        wholesaleCooldown = WHOLESALE_SPAWN_TIME;
+        // Reset Cooldown
+        wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
 
+        // Server Log
         console.log("New Wholesale");
+    } else {
+        wholesale_spawn_cooldown--;
     }
 
+    // Despawn ended Wholesales
+    // For each Wholesale
     for(let i in wholesaleList){
-        wholesaleList[i].timer--;
-
-        if(wholesaleList[i].timer <= 0){
+        // If Despawn Timer has ended
+        if(wholesaleList[i].despawn_timer <= 0){
+            // End the Bidding
             wholesaleList[i].endBid();
 
+            // Remove the Wholesale
             wholesaleList.splice(i, 1);
 
+            // Update all players
             for(let i in playerList){
                 playerList[i].update();
             }
             
+            // Server Log
             console.log("End Wholesale");
+        } else {
+            // Decrement the Despawn Timer
+            wholesaleList[i].despawn_timer--;
         }
     }
+
+    //=============================================================
 
     // Update Customes
     updateCustomers();

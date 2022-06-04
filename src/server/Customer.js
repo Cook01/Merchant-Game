@@ -1,8 +1,9 @@
 import { Random } from "../utils/Random.js";
 
 export class Customer{
-    constructor(money = 100, SHOPING_RATE = 1/30){
-        this.SHOPING_RATE = SHOPING_RATE;
+    constructor(money, shopping_timer, despawn_timer){
+        this.shopping_timer = shopping_timer;
+        this.despawn_timer = despawn_timer;
 
         this.money = money;
         this.wishlist = {};
@@ -53,7 +54,7 @@ export class Customer{
         // let itemListKey = Object.keys(itemList);
 
         //Generate random nb of item to add (between 1 and 2 times Item List length)
-        let nbItems = Random.uniformInt(1, itemList.length * 2);
+        let nbItems = Random.uniformInt(1, Object.keys(itemList).length * 2);
 
         for(let i = 0; i < nbItems; i++){
             // //Generate random item ID
@@ -69,56 +70,50 @@ export class Customer{
 
     // Customer Shopping action
     shop(playerList){
-        // Randome Shopping Rate
-        if(Random.uniform() < this.SHOPING_RATE){
-            // Server Log
-            console.log("Customer shop");
+        // For each Item in wishlist
+        for(let elementId in this.wishlist){
+            // Int Price List
+            let priceList = []
+            // Get the Item
+            let item = this.wishlist[elementId].item;
 
-            // For each Item in wishlist
-            for(let elementId in this.wishlist){
-                // Int Price List
-                let priceList = []
-                // Get the Item
-                let item = this.wishlist[elementId].item;
+            // For each Player
+            for(let playerId in playerList){
+                // Get Player
+                let player = playerList[playerId];
+                // Get Price for the Item in Player Inventory
+                let itemPrice = player.inventory.getPrice(item);
 
-                // For each Player
-                for(let playerId in playerList){
-                    // Get Player
-                    let player = playerList[playerId];
-                    // Get Price for the Item in Player Inventory
-                    let itemPrice = player.inventory.getPrice(item);
-
-                    // If Price exist (Payer do Sell the Item)
-                    if(itemPrice != -1){
-                        // Add new entry in Price List
-                        priceList.push({
-                            "player": player,
-                            "price": itemPrice
-                        });
-                    }
+                // If Price exist (Payer do Sell the Item)
+                if(itemPrice != -1){
+                    // Add new entry in Price List
+                    priceList.push({
+                        "player": player,
+                        "price": itemPrice
+                    });
                 }
+            }
 
-                // Sort Price List (cheapest first)
-                priceList.sort((a, b) => (a.price > b.price) ? 1 : -1);
+            // Sort Price List (cheapest first)
+            priceList.sort((a, b) => (a.price > b.price) ? 1 : -1);
 
-                // If Price List have any entry (at least one Player sell the Item)
-                if(priceList.length > 0){
-                    // Get the first entry from Price List (cheapest)
-                    let priceEntry = priceList[0];
+            // If Price List have any entry (at least one Player sell the Item)
+            if(priceList.length > 0){
+                // Get the first entry from Price List (cheapest)
+                let priceEntry = priceList[0];
 
-                    // Get selling Player
-                    let player = priceEntry.player;
-                    // Get selling Price
-                    let price = priceEntry.price;
+                // Get selling Player
+                let player = priceEntry.player;
+                // Get selling Price
+                let price = priceEntry.price;
 
-                    // Quatity = Min between quantity wished and quantity avalable
-                    let quantity = Math.min(this.wishlist[elementId].quantity, player.inventory.getQuantity(item));
-                    // Quantity = Min between previous result and what the budget allow
-                    quantity = Math.min(quantity, Math.floor(this.money / price));
+                // Quatity = Min between quantity wished and quantity avalable
+                let quantity = Math.min(this.wishlist[elementId].quantity, player.inventory.getQuantity(item));
+                // Quantity = Min between previous result and what the budget allow
+                quantity = Math.min(quantity, Math.floor(this.money / price));
 
-                    // Buy the Item
-                    this.buy(player, item, quantity);
-                }
+                // Buy the Item
+                this.buy(player, item, quantity);
             }
         }
     }
