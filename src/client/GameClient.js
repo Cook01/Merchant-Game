@@ -309,6 +309,13 @@ socket.on("Update Wholesales", (wholesales_list) => {
             for(let bid of wholesale.bidList){
                 row_index++;
 
+                if(bid.player.id === myId){
+                    bid_list_table.rows[row_index].style.color = "blue";
+                    bid_list_table.rows[row_index].style.fontWeight = "bold";
+                } else {
+                    bid_list_table.rows[row_index].removeAttribute("style");
+                }
+
                 bid_list_table.rows[row_index].cells[0].textContent = bid.player.pseudo;
                 bid_list_table.rows[row_index].cells[1].textContent = bid.money;
             }
@@ -412,6 +419,14 @@ socket.on("Update Wholesales", (wholesales_list) => {
             for(let bid of wholesale.bidList){
                 // Create a Row
                 let bid_list_table_body_row = bid_list_table_body.insertRow();
+
+                if(bid.player.id == myId){
+                    bid_list_table_body_row.style.color = "blue";
+                    bid_list_table_body_row.style.fontWeight = "bold";
+                } else {
+                    bid_list_table_body_row.removeAttribute("style");
+                }
+
                 // Add two Cells (Player | Bid)
                 bid_list_table_body_row.insertCell().textContent = bid.player.pseudo;
                 bid_list_table_body_row.insertCell().textContent = bid.money;

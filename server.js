@@ -214,6 +214,7 @@ function updateWholesales(){
         let wholesaleSendable = _.cloneDeep(wholesale);
 
         for(let i in wholesaleSendable.bidList){
+            wholesaleSendable.bidList[i].player.id = wholesaleSendable.bidList[i].player.getID();
             delete wholesaleSendable.bidList[i].player.socket;
         }
 
