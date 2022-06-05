@@ -1,36 +1,118 @@
 [
     {
-        "id": 0,
-        "name": "Apple"
+        "name" : "Farmer",
+        "items" : [
+            {
+                "name" : "Crop",
+                "items" : [
+                    {"name" : "Oat"},
+                    {"name" : "Wheat"},
+                    {"name" : "Corn"}
+                ]
+            },
+            {
+                "name" : "Vegetable",
+                "items" : [
+                    {"name" : "Apple"},
+                    {"name" : "Potatoe"},
+                    {"name" : "Leek"}
+                ]
+            },
+            {
+                "name" : "Meat",
+                "items" : [
+                    {"name" : "Chicken"},
+                    {"name" : "Pork"},
+                    {"name" : "Beef"}
+                ]
+            }
+        ]
     },
-
     {
-        "id": 1,
-        "name": "Sword"
+        "name" : "Blacksmith",
+        "items" : [
+            {
+                "name" : "Sword",
+                "items" : [
+                    {"name" : "Wooden Sword"},
+                    {"name" : "Iron Sword"},
+                    {"name" : "Steel Sword"}
+                ]
+            },
+            {
+                "name" : "Shield",
+                "items" : [
+                    {"name" : "Wooden Shield"},
+                    {"name" : "Iron Shield"},
+                    {"name" : "Steel Shield"}
+                ]
+            },
+            {
+                "name" : "Armor",
+                "items" : [
+                    {"name" : "Leather Armor"},
+                    {"name" : "Chainmail"},
+                    {"name" : "Steel Plate Armor"}
+                ]
+            }
+        ]
     },
-
     {
-        "id": 2,
-        "name": "Shield"
+        "name" : "Fletcher",
+        "items" : [
+            {
+                "name" : "Bow",
+                "items" : [
+                    {"name" : "Short Bow"},
+                    {"name" : "Long Bow"},
+                    {"name" : "Crossbow"}
+                ]
+            },
+            {
+                "name" : "Arrow",
+                "items" : [
+                    {"name" : "Wooden Arrow"},
+                    {"name" : "Stone Tipped Arrow"},
+                    {"name" : "Iron Tipped Arrow"}
+                ]
+            },
+            {
+                "name" : "Bolt",
+                "items" : [
+                    {"name" : "Wooden Bolt"},
+                    {"name" : "Stone Tipped Bolt"},
+                    {"name" : "Iron Tipped Bolt"}
+                ]
+            }
+        ]
     },
-
     {
-        "id": 3,
-        "name": "Potion"
-    },
-
-    {
-        "id": 4,
-        "name": "Armor"
-    },
-
-    {
-        "id": 5,
-        "name": "Bow"
-    },
-
-    {
-        "id": 6,
-        "name": "Arrow"
+        "name" : "Alchimist",
+        "items" : [
+            {
+                "name" : "Tonic",
+                "items" : [
+                    {"name" : "Health Tonic"},
+                    {"name" : "Mana Tonic"},
+                    {"name" : "Stamina Tonic"}
+                ]
+            },
+            {
+                "name" : "Potion",
+                "items" : [
+                    {"name" : "Invisibility Potion"},
+                    {"name" : "Strength Potion"},
+                    {"name" : "Poison"}
+                ]
+            },
+            {
+                "name" : "Alchemy Ingredient",
+                "items" : [
+                    {"name" : "Glowing Mushroom"},
+                    {"name" : "Strange Root"},
+                    {"name" : "Beast Claw"}
+                ]
+            }
+        ]
     }
 ]

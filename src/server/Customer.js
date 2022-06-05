@@ -52,7 +52,7 @@ export class Customer{
     // Generate a Random Wishlist
     generateRandomWishlist(item_list){
         // Generate random nb of item to add (between 1 and 2 times Item List length)
-        let nbItems = Random.uniformInt(1, Object.keys(item_list).length * 2);
+        let nbItems = Random.uniformInt(5, 10);
 
         // Loop nbItem times
         for(let i = 0; i < nbItems; i++){
@@ -60,7 +60,7 @@ export class Customer{
             let rnd_Item = Random.choose(item_list);
 
             // Add 1 or 2 times the item to the wishlist
-            this.addItemToWishlist(rnd_Item, Random.uniformInt(1, 2));
+            this.addItemToWishlist(rnd_Item, 1);
         }
     }
 

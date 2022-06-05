@@ -62,7 +62,7 @@ caption {
 .wholesale {
     display: grid;
     grid-template-areas:
-    'item_list bid_list'
+    'category_list bid_list'
     'wholesale_bid_input wholesale_bid_input';
 
     border: 6px solid #948473;
@@ -72,8 +72,8 @@ caption {
     margin: 0.5%;
 }
 
-.item_list{
-    grid-area: item_list;
+.category_list{
+    grid-area: category_list;
 }
 
 .bid_list{
