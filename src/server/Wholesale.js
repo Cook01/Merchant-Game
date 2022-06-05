@@ -6,41 +6,41 @@ export class Wholesale{
         this.id = id;
         this.despawn_timer = despawn_timer;
 
-        this.item_list = {};
+        this.category_list = {};
         this.bid_list = [];
     }
 
     // Add Item to Wholesale Item List
-    addItem(item, quantity){
+    addItem(category, quantity){
         // Item has not been found yet
-        let item_found = false;
+        let category_found = false;
 
         // For each Element in Wholesale Item List
-        for(let id in this.item_list){
+        for(let id in this.category_list){
             // If element is the correct Item
-            if(item.id == id){
+            if(category.id == id){
                 // Add Quantity to the Wishlist Item
-                this.item_list[id].add(quantity);
+                this.category_list[id].add(quantity);
                 // Item has been Found
-                item_found = true;
+                category_found = true;
             }
         }
 
         // If Item has not been Found
-        if(!item_found)
+        if(!category_found)
             // Create a new Wholesale Item List Slot for Item
-            this.item_list[item.id] = new Slot(item, quantity);
+            this.category_list[category.id] = new Slot(category, quantity);
     }
 
     // Generate a Random Wholesale
-    static generateRandomWholesale(id, item_list, despawn_timer){
+    static generateRandomWholesale(id, category_list, despawn_timer){
 
         let new_wholesale = new Wholesale(id, despawn_timer);
-        let items_quantity = Random.uniformInt(5, 10);
+        let quantity = Random.uniformInt(3, 5);
 
-        for(let i = 0; i < items_quantity; i++){
+        for(let i = 0; i < quantity; i++){
             // Add a Random Item to the Wholesale Item List
-            new_wholesale.addItem(Random.choose(item_list), 1);
+            new_wholesale.addItem(Random.choose(category_list), Random.choose([5, 10]));
         }
 
         // Generate the Wholesale
@@ -99,9 +99,12 @@ export class Wholesale{
             let winner = this.bid_list.splice(0, 1)[0];
             
             // For each Item in Wholesale Item List
-            for(let i in this.item_list){
-                // Add Item to the Winner Inventory
-                winner.player.inventory.addItem(this.item_list[i].item, this.item_list[i].quantity, winner.money);
+            for(let i in this.category_list){
+                for(let j = 0; j < this.category_list[i].quantity; j++){
+                    let item = this.category_list[i].category.getRandomItem();
+                    // Add Item to the Winner Inventory
+                    winner.player.inventory.addItem(item, 1, winner.money);
+                }
             }
             // Update the Winner
             winner.player.update();
@@ -148,8 +151,8 @@ class Bid{
 //============================================================= Item Slot ========================================================
 
 class Slot{
-    constructor(item, quantity){
-        this.item = item;
+    constructor(category, quantity){
+        this.category = category;
         this.quantity = quantity;
     }
 

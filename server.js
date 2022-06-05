@@ -23,29 +23,29 @@ import JSON_ITEMS from "./src/server/datas/ItemList.json" assert {type: "json"};
 
 // Customers spawn rate
 const CUSTOMER_SPAWN_RATE = {
-    MEAN : Time.getSeconds(0, 2), // 2 min
-    STD_DEV : Time.getSeconds(0, 1) // 1 min
+    MEAN : Time.getSeconds(30, 0), // 2 min
+    STD_DEV : Time.getSeconds(10, 0) // 1 min
 }
 // Customers despawn rate
 const CUSTOMER_SHOPING_RATE = {
-    MEAN : Time.getSeconds(30), // 30 sec
-    STD_DEV : Time.getSeconds(10) // 10 sec
+    MEAN : Time.getSeconds(10), // 30 sec
+    STD_DEV : Time.getSeconds(0) // 10 sec
 }
 // Customers despawn rate
 const CUSTOMER_DESPAWN_RATE = {
-    MEAN : Time.getSeconds(0, 5), // 5 min
-    STD_DEV : Time.getSeconds(0, 1) // 1 min
+    MEAN : Time.getSeconds(0, 2), // 5 min
+    STD_DEV : Time.getSeconds(30, 0) // 1 min
 }
 
 // Wholesale spawn rate
 const WHOLESALE_SPAWN_RATE = {
-    MEAN : Time.getSeconds(0, 2), // 2 min
-    STD_DEV : Time.getSeconds(0, 1) // 1 min
+    MEAN : Time.getSeconds(10, 0), // 2 min
+    STD_DEV : Time.getSeconds(0, 0) // 1 min
 }
 // Wholesale despawn rate
 const WHOLESALE_DESPAWN_RATE = {
-    MEAN : Time.getSeconds(0, 3), // 3 min
-    STD_DEV : Time.getSeconds(0, 1) // 1 min
+    MEAN : Time.getSeconds(30, 0), // 3 min
+    STD_DEV : Time.getSeconds(10, 0) // 1 min
 }
 
 // Import Game Modules
@@ -53,7 +53,8 @@ import {
     Item,
     Player,
     Customer,
-    Wholesale
+    Wholesale,
+    Category
 } from "./src/server/index.js";
 
 // GLOBAL VARIABLES
@@ -88,10 +89,26 @@ server.listen(PORT, function(){
 
 
 // List of Items
+let category_list = {};
 let item_list = {};
+
 // Read Item List from JSON Data file
-for(let item of JSON_ITEMS){
-    item_list[item.id] = (new Item(item.id, item.name));
+let item_id = 0;
+let category_id = 0;
+
+for(let job of JSON_ITEMS){
+    for(let item_category of job.items){
+        category_list[category_id] = (new Category(category_id, item_category.name));
+
+        for(let item of item_category.items){
+            item_list[item_id] = (new Item(item_id, item.name));
+            category_list[category_id].addItem(item_list[item_id]);
+
+            item_id++;
+        }
+
+        category_id++;
+    }
 }
 
 // List of Players
@@ -417,7 +434,7 @@ setInterval(() => {
         // Generate deswpan rate
         let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN, WHOLESALE_DESPAWN_RATE.STD_DEV);
         // Create new Wholesale and push it to Wholesale List
-        wholesale_list.push(Wholesale.generateRandomWholesale(id, item_list, despawn_timer));
+        wholesale_list.push(Wholesale.generateRandomWholesale(id, category_list, despawn_timer));
 
         // Update the Wholesale List
         updateWholesales();
@@ -427,6 +444,7 @@ setInterval(() => {
         // Reset Cooldown
         wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
     } else {
+        console.log(Time.displayTime(wholesale_spawn_cooldown));
         // Decrement Spawn Timer
         wholesale_spawn_cooldown--;
     }
