@@ -65,7 +65,7 @@ export class Customer{
     }
 
     // Customer Shopping action
-    shop(player_list, q1 = 1, q2 = 1, q3 = 0.5){
+    shop(player_list, q1 = 1.5, q2 = 1, q3 = 0.5){
         
         let simulation = [];
 
@@ -132,30 +132,32 @@ export class Customer{
 
         simulation.sort((a, b) => ((a.score < b.score) ? 1 : -1));
 
-        let player_selected = player_list[simulation[0].player_id];
-        let player_inventory = [];
+        if(simulation.length > 0){
+            let player_selected = player_list[simulation[0].player_id];
+            let player_inventory = [];
 
-        for(let j in player_selected.inventory.slot_list){
-            player_inventory.push(player_selected.inventory.slot_list[j]);
-        }
-        player_inventory.sort((a, b) => ((a.price > b.price) ? 1 : -1));
+            for(let j in player_selected.inventory.slot_list){
+                player_inventory.push(player_selected.inventory.slot_list[j]);
+            }
+            player_inventory.sort((a, b) => ((a.price > b.price) ? 1 : -1));
 
-        let can_still_buy = false;
+            let can_still_buy = false;
 
-        do {
-            can_still_buy = false;
+            do {
+                can_still_buy = false;
 
-            for(let slot of player_inventory){
-                if(this.wishlist[slot.item.id] != undefined){
-                    if(slot.price <= this.money){
-                        this.buy(player_selected, slot.item, 1);
-                        can_still_buy = true;
+                for(let slot of player_inventory){
+                    if(this.wishlist[slot.item.id] != undefined){
+                        if(slot.price <= this.money){
+                            this.buy(player_selected, slot.item, 1);
+                            can_still_buy = true;
 
-                        break;
+                            break;
+                        }
                     }
                 }
-            }
-        } while(can_still_buy);
+            } while(can_still_buy);
+        }
     }
 
 
