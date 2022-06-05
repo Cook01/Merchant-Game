@@ -207,34 +207,50 @@ socket.on("Update Customers", (customer_list) => {
     // For each Customer in Customer List
     for(let customer of customer_list){
         // New table
-        let customer_table_html = "<table>";
+        let customer_table = document.createElement("table");
         // Set caption
-        customer_table_html += "<caption>Budget : <span style='font-weight: bold'>" + customer.money + "</span></caption>";
+        let customer_budget_caption = customer_table.createCaption();
+        customer_budget_caption.textContent = "Budget : ";
+
+        let customer_money_ui = document.createElement("span");
+        customer_money_ui.style.fontWeight = "bold";
+        customer_money_ui.style.color = "#ffd600";
+        customer_money_ui.textContent = customer.money;
+
+        customer_budget_caption.appendChild(customer_money_ui)
 
         // Set the Header
-        customer_table_html += "<thead><tr><th>Item Name</th><th>Quantity</th></tr></thead>";
+        let customer_table_header = customer_table.createTHead();
+        let customer_table_header_row = customer_table_header.insertRow();
+
+        let customer_table_header_item_name_cell = document.createElement("th");
+        let customer_table_header_quantity_cell = document.createElement("th");
+
+        customer_table_header_item_name_cell.textContent = "Item Name";
+        customer_table_header_quantity_cell.textContent = "Quantity";
+
+        customer_table_header_row.appendChild(customer_table_header_item_name_cell);
+        customer_table_header_row.appendChild(customer_table_header_quantity_cell);
+
         // New tBody
-        customer_table_html += "<tbody>"
+        let customer_table_body = customer_table.createTBody();
+
         // Foreach item in wishlist
         for(let element_id in customer.wishlist){
             const whishlist_element = customer.wishlist[element_id];
 
             // Create a new row
-            customer_table_html += "<tr>";
+            let customer_table_row = customer_table_body.insertRow();
 
             // Create the cells
-            customer_table_html += "<td>" + whishlist_element.item.name + "</td>";
-            customer_table_html += "<td>" + whishlist_element.quantity + "</td>";
+            let customer_table_item_name_cell = customer_table_row.insertCell();
+            let customer_table_quantity_cell = customer_table_row.insertCell();
 
-            // Close the row
-            customer_table_html += "</tr>";
+            customer_table_item_name_cell.textContent = whishlist_element.item.name;
+            customer_table_quantity_cell.textContent = whishlist_element.quantity;
         }
-        // Close the tBody
-        customer_table_html += "</tbody>";
-        // Close the Table
-        customer_table_html += "</table>";
 
-        new_customers_ui.innerHTML += customer_table_html;
+        new_customers_ui.appendChild(customer_table);
     }
 
     // Switch the old UI with the new one
