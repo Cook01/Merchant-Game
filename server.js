@@ -23,29 +23,29 @@ import JSON_ITEMS from "./src/server/datas/ItemList.json" assert {type: "json"};
 
 // Customers spawn rate
 const CUSTOMER_SPAWN_RATE = {
-    MEAN : Time.getSeconds(30, 0), // 2 min
-    STD_DEV : Time.getSeconds(10, 0) // 1 min
+    MEAN : Time.getSeconds(0, 2), // 2 min
+    STD_DEV : Time.getSeconds(30, 0) // 30 sec
 }
 // Customers despawn rate
 const CUSTOMER_SHOPING_RATE = {
-    MEAN : Time.getSeconds(10), // 30 sec
-    STD_DEV : Time.getSeconds(0) // 10 sec
+    MEAN : Time.getSeconds(30), // 30 sec
+    STD_DEV : Time.getSeconds(5) // 5 sec
 }
 // Customers despawn rate
 const CUSTOMER_DESPAWN_RATE = {
-    MEAN : Time.getSeconds(0, 2), // 5 min
-    STD_DEV : Time.getSeconds(30, 0) // 1 min
+    MEAN : Time.getSeconds(0, 5), // 5 min
+    STD_DEV : Time.getSeconds(0, 1) // 1 min
 }
 
 // Wholesale spawn rate
 const WHOLESALE_SPAWN_RATE = {
-    MEAN : Time.getSeconds(10, 0), // 2 min
-    STD_DEV : Time.getSeconds(0, 0) // 1 min
+    MEAN : Time.getSeconds(0, 2), // 2 min
+    STD_DEV : Time.getSeconds(30, 0) // 30 sec
 }
 // Wholesale despawn rate
 const WHOLESALE_DESPAWN_RATE = {
-    MEAN : Time.getSeconds(30, 0), // 3 min
-    STD_DEV : Time.getSeconds(10, 0) // 1 min
+    MEAN : Time.getSeconds(0, 3), // 3 min
+    STD_DEV : Time.getSeconds(30, 0) // 30 sec
 }
 
 // Import Game Modules
@@ -137,6 +137,12 @@ let customer_list = [];
 // List of Wholesales
 let wholesale_list = [];
 
+for(let i = 0; i < 2; i++){
+    // Generate deswpan rate
+    let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN / (2 - i), WHOLESALE_DESPAWN_RATE.STD_DEV / (2 - i));
+    // Create new Wholesale and push it to Wholesale List
+    wholesale_list.push(Wholesale.generateRandomWholesale(i, category_list, despawn_timer));
+}
 
 //============================================================= Player Interactions ========================================================
 
@@ -350,7 +356,7 @@ function updateWholesales(){
 
 // Init First Spawn Cooldowns
 let customer_spawn_cooldown = Random.normal(CUSTOMER_SPAWN_RATE.MEAN, CUSTOMER_SPAWN_RATE.STD_DEV);
-let wholesale_spawn_cooldown = Time.getSeconds(1);
+let wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
 
 // Every seconds
 setInterval(() => {
@@ -444,7 +450,6 @@ setInterval(() => {
         // Reset Cooldown
         wholesale_spawn_cooldown = Random.normal(WHOLESALE_SPAWN_RATE.MEAN, WHOLESALE_SPAWN_RATE.STD_DEV);
     } else {
-        console.log(Time.displayTime(wholesale_spawn_cooldown));
         // Decrement Spawn Timer
         wholesale_spawn_cooldown--;
     }
