@@ -362,6 +362,18 @@ socket.on("Update Wholesales", (wholesales_list) => {
 
             //=============================================================
 
+            // Create Theme Title
+            let wholesale_theme_ui = document.createElement("div");
+            // Set class
+            wholesale_theme_ui.classList.add("wholesale_theme");
+            // Set text
+            wholesale_theme_ui.textContent = wholesale.theme.name;
+
+            // Add Theme Title to Wholesale UI
+            wholesale_ui.appendChild(wholesale_theme_ui);
+
+            //=============================================================
+
             // Create Item List Table
             let category_list_table = document.createElement("table");
             // Set Table id
