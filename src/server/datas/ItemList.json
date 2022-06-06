@@ -1,7 +1,7 @@
 [
     {
         "name" : "Farmer",
-        "items" : [
+        "category" : [
             {
                 "name" : "Crop",
                 "items" : [
@@ -30,7 +30,7 @@
     },
     {
         "name" : "Blacksmith",
-        "items" : [
+        "category" : [
             {
                 "name" : "Sword",
                 "items" : [
@@ -59,7 +59,7 @@
     },
     {
         "name" : "Fletcher",
-        "items" : [
+        "category" : [
             {
                 "name" : "Bow",
                 "items" : [
@@ -88,7 +88,7 @@
     },
     {
         "name" : "Alchimist",
-        "items" : [
+        "category" : [
             {
                 "name" : "Tonic",
                 "items" : [

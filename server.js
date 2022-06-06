@@ -54,7 +54,8 @@ import {
     Player,
     Customer,
     Wholesale,
-    Category
+    Category,
+    Theme
 } from "./src/server/index.js";
 
 // GLOBAL VARIABLES
@@ -88,27 +89,35 @@ server.listen(PORT, function(){
 //============================================================= Init Game State ========================================================
 
 
-// List of Items
+let theme_list = {};
+// List of Categories
 let category_list = {};
+// List of Items
 let item_list = {};
 
 // Read Item List from JSON Data file
-let item_id = 0;
+let theme_id = 0
 let category_id = 0;
+let item_id = 0;
 
-for(let job of JSON_ITEMS){
-    for(let item_category of job.items){
+for(let item_theme of JSON_ITEMS){
+    theme_list[theme_id] = (new Theme(theme_id, item_theme.name));
+
+    for(let item_category of item_theme.category){
         category_list[category_id] = (new Category(category_id, item_category.name));
 
         for(let item of item_category.items){
             item_list[item_id] = (new Item(item_id, item.name));
-            category_list[category_id].addItem(item_list[item_id]);
+            //category_list[category_id].addItem(item_list[item_id]);
+            theme_list[theme_id].addItem(item_list[item_id], category_list[category_id]);
 
             item_id++;
         }
 
         category_id++;
     }
+
+    theme_id++;
 }
 
 // List of Players
@@ -137,11 +146,12 @@ let customer_list = [];
 // List of Wholesales
 let wholesale_list = [];
 
+// Generate 2 initals Wholesales
 for(let i = 0; i < 2; i++){
     // Generate deswpan rate
     let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN / (2 - i), WHOLESALE_DESPAWN_RATE.STD_DEV / (2 - i));
     // Create new Wholesale and push it to Wholesale List
-    wholesale_list.push(Wholesale.generateRandomWholesale(i, category_list, despawn_timer));
+    wholesale_list.push(Wholesale.generateRandomWholesale(i, theme_list, despawn_timer));
 }
 
 //============================================================= Player Interactions ========================================================
@@ -440,7 +450,7 @@ setInterval(() => {
         // Generate deswpan rate
         let despawn_timer = Random.normal(WHOLESALE_DESPAWN_RATE.MEAN, WHOLESALE_DESPAWN_RATE.STD_DEV);
         // Create new Wholesale and push it to Wholesale List
-        wholesale_list.push(Wholesale.generateRandomWholesale(id, category_list, despawn_timer));
+        wholesale_list.push(Wholesale.generateRandomWholesale(id, theme_list, despawn_timer));
 
         // Update the Wholesale List
         updateWholesales();

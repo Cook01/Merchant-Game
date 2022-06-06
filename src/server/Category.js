@@ -8,16 +8,28 @@ export class Category{
         this.item_list = [];
     }
 
+    // Check if the Category has the Item
+    hasItem(item){
+        return this.item_list.findIndex((x) => {return (x.id == item.id)}) != -1;
+    }
+
+    // Check if the Category is empty
+    isEmpty(){
+        return this.item_list.length == 0;
+    }
+
     // Add Item to this Category
     addItem(item){
         // If Category doesn't already has the Item
-        if(this.item_list.find((x) => {return (x.id == item.id)}) == undefined)
-            // Add quantity to the Inventory Slot
+        if(!this.hasItem(item))
+            // Add Item to the Category
             this.item_list.push(item);
+
+        console.log(this.hasItem(item));
     }
 
     // Remove Item from the Category
-    remove(item){
+    removeItem(item){
         // Get the Item index
         let index_to_remove = this.item_list.findIndex((x) => {return (x.id == item.id)});
 
@@ -27,7 +39,7 @@ export class Category{
             this.item_list.splice(index_to_remove, 1);
     }
 
-
+    // Get a Random Item from this Category
     getRandomItem(){
         return Random.choose(this.item_list);
     }

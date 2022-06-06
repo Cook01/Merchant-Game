@@ -4,6 +4,7 @@ import { Inventory } from "./Inventory.js";
 import { Customer } from "./Customer.js";
 import { Wholesale } from "./Wholesale.js";
 import { Category } from "./Category.js";
+import { Theme } from "./Theme.js";
 
 export {
     Item,
@@ -11,5 +12,6 @@ export {
     Inventory,
     Customer,
     Wholesale,
-    Category
+    Category,
+    Theme
 };

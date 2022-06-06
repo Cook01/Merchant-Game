@@ -2,10 +2,11 @@ import { Random } from "../utils/Random.js";
 
 //============================================================= Wholesale ========================================================
 export class Wholesale{
-    constructor(id, despawn_timer){
+    constructor(id, theme, despawn_timer){
         this.id = id;
         this.despawn_timer = despawn_timer;
 
+        this.theme = theme;
         this.category_list = {};
         this.bid_list = [];
     }
@@ -33,14 +34,14 @@ export class Wholesale{
     }
 
     // Generate a Random Wholesale
-    static generateRandomWholesale(id, category_list, despawn_timer){
-
-        let new_wholesale = new Wholesale(id, despawn_timer);
+    static generateRandomWholesale(id, theme_list, despawn_timer){
+        let theme = Random.choose(theme_list);
+        let new_wholesale = new Wholesale(id, theme, despawn_timer);
         let quantity = Random.uniformInt(3, 5);
 
         for(let i = 0; i < quantity; i++){
             // Add a Random Item to the Wholesale Item List
-            new_wholesale.addItem(Random.choose(category_list), Random.choose([5, 10]));
+            new_wholesale.addItem(theme.getRandomCategory(), Random.choose([5, 10]));
         }
 
         // Generate the Wholesale
