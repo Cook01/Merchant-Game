@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 //============================================================= Inventory ========================================================
 
 // Inventory Container contains a list of Inventory Slots
@@ -81,6 +83,16 @@ export class Inventory{
             // Quantity = 0
             return 0;
     }
+
+    getSendable(){
+        let inventory_sendable = _.cloneDeep(this);
+
+        for(let i in inventory_sendable.slot_list){
+            inventory_sendable.slot_list[i] = inventory_sendable.slot_list[i].getSendable();
+        }
+
+        return inventory_sendable;
+    }
 }
 
 //============================================================= Inventory Slot ========================================================
@@ -115,5 +127,13 @@ class InventorySlot{
 
         // Set new Price
         this.price = new_price;
+    }
+
+    getSendable(){
+        let slot_sendable = _.cloneDeep(this);
+
+        slot_sendable.item = slot_sendable.item.getSendable();
+
+        return slot_sendable;
     }
 }

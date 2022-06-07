@@ -111,49 +111,87 @@ socket.on("Update Player", (player) => {
     // Update Value
     money_ui.textContent = player.money;
 
-    // Get the current Inventory UI Element
-    let old_inventory_ui = document.getElementById("inventory_ui");
-    // Create the new UI Element
-    let new_inventory_ui = document.createElement('tbody');
-    // Set the Inventory UI ID
-    new_inventory_ui.id = "inventory_ui";
+    let themes_list = [];
+    
+    for(let i in player.inventory.slot_list){
+        let item = player.inventory.slot_list[i].item;
 
-    // For each Inventory Slot in Inventory
-    for(let item_id in player.inventory.slot_list){
-        // Get the Item
-        let slot = player.inventory.slot_list[item_id];
+        let theme = themes_list.find((x) => {return item.theme.id == x.id});
+        if(theme == undefined){
+            theme = item.theme;
+            theme.category_list = [];
 
-        // Create a new row
-        let inventory_item_row = new_inventory_ui.insertRow();
-        // Set the Inventory row ID
-        inventory_item_row.id = "item_" + item_id;
+            themes_list.push(theme);
+        }
 
-        // Create the cells
-        let item_name_cell = inventory_item_row.insertCell();
-        let item_quantity_cell = inventory_item_row.insertCell();
-        let item_price_cell = inventory_item_row.insertCell();
-
-        // Print the Item infos
-        item_name_cell.textContent = slot.item.name;
-        item_quantity_cell.textContent = slot.quantity;
-
-        // Create the Price Input Field
-        let item_price_input = document.createElement("input");
-        item_price_input.setAttribute("type", "number");
-        item_price_input.setAttribute("min", "0");
-        item_price_input.setAttribute("value", slot.price);
-        // Set OnChange() Listener
-        item_price_input.onchange = (() => {
-            // Change the Price
-            changePrice(item_id, item_price_input.value);
-        });
-
-        // Add the Price Input Field to the Cell
-        item_price_cell.appendChild(item_price_input);
+        if(theme.category_list.find((x) => {return item.category.id == x.id}) == undefined)
+            theme.category_list.push(item.category);
     }
 
-    // Switch the old UI with the new one
-    old_inventory_ui.parentNode.replaceChild(new_inventory_ui, old_inventory_ui);
+    // Get Inventory Container
+    let old_player_inventory_container = document.getElementById("player_inventory");
+    let new_player_inventory_container = document.createElement("div");
+    new_player_inventory_container.id = "player_inventory";
+
+    // For each Theme in list
+    for(let theme of themes_list){
+        let theme_table = document.createElement("table");
+        theme_table.id = "theme_" + theme.id;
+
+        let theme_table_head = theme_table.createTHead();
+        let theme_table_head_row = theme_table_head.insertRow();
+
+        let theme_table_header_item_name_cell = document.createElement("th");
+        let theme_table_header_quantity_cell = document.createElement("th");
+        let theme_table_header_price_cell = document.createElement("th");
+
+        theme_table_header_item_name_cell.textContent = "Item Name";
+        theme_table_header_quantity_cell.textContent = "Quantity";
+        theme_table_header_price_cell.textContent = "Price";
+
+        theme_table_head_row.appendChild(theme_table_header_item_name_cell);
+        theme_table_head_row.appendChild(theme_table_header_quantity_cell);
+        theme_table_head_row.appendChild(theme_table_header_price_cell);
+
+        theme_table.appendChild(theme_table_head);
+
+        for(let category of theme.category_list){
+            let category_table_body = theme_table.createTBody();
+            category_table_body.id = "category_" + category.id;
+
+            let category_table_body_header = category_table_body.insertRow().insertCell();
+            category_table_body_header.setAttribute("colspan", 3);
+            category_table_body_header.style.fontWeight = "bold";
+            category_table_body_header.textContent = category.name;
+
+            for(let i in player.inventory.slot_list){
+                let slot = player.inventory.slot_list[i];
+
+                if(slot.item.category.id == category.id){
+                    let category_table_body_row = category_table_body.insertRow();
+
+                    category_table_body_row.insertCell().textContent = slot.item.name;
+                    category_table_body_row.insertCell().textContent = slot.quantity;
+
+                    let item_price_input_cell = category_table_body_row.insertCell();
+                    let item_price_input = document.createElement("input");
+                    item_price_input.setAttribute("type", "number");
+                    item_price_input.setAttribute("min", 0);
+                    item_price_input.setAttribute("value", slot.price);
+                    item_price_input.onchange = () => {
+                        // Change the Price
+                        changePrice(slot.item.id, item_price_input.value);
+                    };
+
+                    item_price_input_cell.appendChild(item_price_input);
+                }
+            }
+        }
+
+        new_player_inventory_container.appendChild(theme_table);
+    }
+
+    old_player_inventory_container.parentNode.replaceChild(new_player_inventory_container, old_player_inventory_container);
 });
 
 //=============================================================

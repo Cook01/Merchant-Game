@@ -185,6 +185,19 @@ export class Customer{
             // player.pingItem(item);
         }
     }
+
+    getSendable(){
+        let customer_sendable = _.cloneDeep(this);
+
+        delete customer_sendable.shopping_timer;
+        delete customer_sendable.despawn_timer;
+
+        for(let i in customer_sendable.wishlist){
+            customer_sendable.wishlist[i] = customer_sendable.wishlist[i].getSendable();
+        }
+
+        return customer_sendable;
+    }
 }
 
 //============================================================= Wishlist Slot ========================================================
@@ -208,5 +221,13 @@ class WishlistSlot{
         // Check that quantity allways >= 0
         if(this.quantity < 0)
             this.quantity = 0;
+    }
+
+    getSendable(){
+        let slot_sendable = _.cloneDeep(this);
+
+        slot_sendable.item = slot_sendable.item.getSendable();
+
+        return slot_sendable;
     }
 }
