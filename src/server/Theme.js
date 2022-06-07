@@ -1,4 +1,5 @@
 import { Random } from "../utils/Random.js";
+import _ from "lodash";
 
 export class Theme{
     constructor(id, name){
@@ -34,6 +35,10 @@ export class Theme{
 
 
 
+    hasItem(item){
+        return this.category_list.findIndex((x) => {return x.hasItem(item)}) != -1;
+    }
+
     // Add Item to this Theme
     addItem(item, category){
         // Add the Item to the Category
@@ -63,5 +68,14 @@ export class Theme{
     // Get a Random Item from the Theme
     getRandomItem(){
         return this.getRandomCategory().getRandomItem();
+    }
+
+
+    getSendable(){
+        let theme_sendable = _.cloneDeep(this);
+
+        delete theme_sendable.category_list;
+
+        return theme_sendable;
     }
 }

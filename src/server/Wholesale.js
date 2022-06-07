@@ -1,4 +1,5 @@
 import { Random } from "../utils/Random.js";
+import _ from "lodash";
 
 //============================================================= Wholesale ========================================================
 export class Wholesale{
@@ -119,6 +120,27 @@ export class Wholesale{
             }
         }
     }
+
+    getSendable(){
+        // Deep Clone Wholesale
+        let wholesale_sendable = _.cloneDeep(this);
+
+        wholesale_sendable.theme = wholesale_sendable.theme.getSendable();
+
+        // For each Bid in Bid List of the Clone
+        for(let i in wholesale_sendable.bid_list){
+            wholesale_sendable.bid_list[i] = wholesale_sendable.bid_list[i].getSendable();
+        }
+
+        for(let i in wholesale_sendable.category_list){
+            wholesale_sendable.category_list[i] =  wholesale_sendable.category_list[i].getSendable();
+        }
+
+        // Remove the Despawn Timer
+        delete wholesale_sendable.despawn_timer;
+
+        return wholesale_sendable;
+    }
 }
 
 //============================================================= Bid ========================================================
@@ -147,6 +169,14 @@ class Bid{
         // Update the Player
         this.player.update();
     }
+
+    getSendable(){
+        let bid_sendable = _.cloneDeep(this);
+
+        bid_sendable.player = bid_sendable.player.getSendable();
+
+        return bid_sendable;
+    }
 }
 
 //============================================================= Item Slot ========================================================
@@ -169,5 +199,13 @@ class Slot{
         // Check that quantity allways >= 0
         if(this.quantity < 0)
             this.quantity = 0;
+    }
+
+    getSendable(){
+        let slot_sendable = _.cloneDeep(this);
+
+        slot_sendable.category = slot_sendable.category.getSendable();
+
+        return slot_sendable;
     }
 }

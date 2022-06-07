@@ -1,4 +1,5 @@
 import { Inventory } from "./Inventory.js";
+import _ from "lodash";
 
 export class Player{
     constructor(socket, pseudo, money){
@@ -29,14 +30,24 @@ export class Player{
     //     this.socket.emit("Ping Player Item", item);
     // }
 
+    getSendable(){
+        // Clone this Player
+        let player_sendable = _.cloneDeep(this);
+
+        // Stock Player ID
+        player_sendable.id = this.getID();
+        // Remove the Socket from the clone
+        delete player_sendable.socket;
+
+        player_sendable.inventory = player_sendable.inventory.getSendable();
+
+        return player_sendable;
+    }
+
+
     // Update Player infos
     update(){
-        // Clone this Player
-        let player = {...this};
-        // Remove the Socket from the clone
-        delete player.socket;
-
         // Send Player Info to the Client
-        this.socket.emit("Update Player", player);
+        this.socket.emit("Update Player", this.getSendable());
     }
 }

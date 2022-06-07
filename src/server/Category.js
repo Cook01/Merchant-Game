@@ -1,4 +1,5 @@
 import { Random } from "../utils/Random.js";
+import _ from "lodash";
 
 export class Category{
     constructor(id, name){
@@ -24,8 +25,6 @@ export class Category{
         if(!this.hasItem(item))
             // Add Item to the Category
             this.item_list.push(item);
-
-        console.log(this.hasItem(item));
     }
 
     // Remove Item from the Category
@@ -42,5 +41,13 @@ export class Category{
     // Get a Random Item from this Category
     getRandomItem(){
         return Random.choose(this.item_list);
+    }
+
+    getSendable(){
+        let category_sendable = _.cloneDeep(this);
+
+        delete category_sendable.item_list;
+
+        return category_sendable;
     }
 }

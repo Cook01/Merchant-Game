@@ -6,7 +6,6 @@ const require = createRequire(import.meta.url);
 const http = require("http");
 const express = require("express");
 const { Server } = require("socket.io");
-const _ = require("lodash");
 
 // Enable __dirname usage
 import { fileURLToPath } from 'url';
@@ -107,7 +106,7 @@ for(let item_theme of JSON_ITEMS){
         category_list[category_id] = (new Category(category_id, item_category.name));
 
         for(let item of item_category.items){
-            item_list[item_id] = (new Item(item_id, item.name));
+            item_list[item_id] = (new Item(item_id, item.name, theme_list[theme_id], category_list[category_id]));
             //category_list[category_id].addItem(item_list[item_id]);
             theme_list[theme_id].addItem(item_list[item_id], category_list[category_id]);
 
@@ -173,12 +172,15 @@ io.on("connection", (socket) => {
 
 
         // === FOR DEBUG ONLY ===
-        // for(let i in item_list)
-        //     new_player.inventory.addItem(item_list[i], 10, 10);
+        //for(let i in item_list)
+            new_player.inventory.addItem(item_list[0], 10, 10);
+            new_player.inventory.addItem(item_list[2], 10, 10);
+            new_player.inventory.addItem(item_list[4], 10, 10);
+            new_player.inventory.addItem(item_list[8], 10, 10);
+            new_player.inventory.addItem(item_list[20], 10, 10);
 
-        // new_player.update();
+        new_player.update();
         // ======================
-
 
         // // Update the LeaderBoard
         // updateLeaderBoard();
@@ -313,18 +315,9 @@ function updateCustomers(){
     
     // For each Customer in Customers List
     for(let customer of customer_list){
-        // Deep Clone Customer
-        let customer_sendable = _.cloneDeep(customer);
-
-        // Remove the Shopping Timer
-        delete customer_sendable.shopping_timer;
-        // Remove the Despawn Timer
-        delete customer_sendable.despawn_timer;
-
         // Add the Sendable Clone to the new List
-        customer_list_sendable.push(customer_sendable);
+        customer_list_sendable.push(customer.getSendable());
     }
-
 
     io.emit("Update Customers", customer_list_sendable);
 }
@@ -339,22 +332,8 @@ function updateWholesales(){
     
     // For each Wholesale in Wholesale List
     for(let wholesale of wholesale_list){
-        // Deep Clone Wholesale
-        let wholesale_sendable = _.cloneDeep(wholesale);
-
-        // For each Bid in Bid List of the Clone
-        for(let i in wholesale_sendable.bid_list){
-            // Stock the Player ID
-            wholesale_sendable.bid_list[i].player.id = wholesale_sendable.bid_list[i].player.getID();
-            // Remove the Socket
-            delete wholesale_sendable.bid_list[i].player.socket;
-        }
-
-        // Remove the Despawn Timer
-        delete wholesale_sendable.despawn_timer;
-
         // Add the Sendable Clone to the new List
-        wholesale_list_sendable.push(wholesale_sendable);
+        wholesale_list_sendable.push(wholesale.getSendable());
     }
 
     // Update the Wholesales infos
