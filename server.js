@@ -340,6 +340,18 @@ function updateWholesales(){
     io.emit("Update Wholesales", wholesale_list_sendable);
 }
 
+function updateWholesalesTimers(){
+    let wholesale_list_sendable =  [];
+    
+    // For each Wholesale in Wholesale List
+    for(let wholesale of wholesale_list){
+        // Add the Sendable Clone to the new List
+        wholesale_list_sendable.push(wholesale.getSendable());
+    }
+
+    io.emit("Update Wholesales Timers", wholesale_list_sendable);
+}
+
 
 //============================================================= Main Loop ========================================================
 
@@ -473,4 +485,7 @@ setInterval(() => {
 
     // // Update Leader Board
     // updateLeaderBoard();
+
+    // Update timers
+    updateWholesalesTimers();
 }, 1000);
