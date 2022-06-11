@@ -314,6 +314,11 @@ socket.on("Update Wholesales", (wholesales_list) => {
 
             //=============================================================
 
+            let wholesale_timer_ui = document.getElementById("wholesale_timer_" + wholesale.id);
+            wholesale_timer_ui.textContent = Time.displayTime(wholesale.despawn_timer);
+
+            //=============================================================
+
             // Update Item List
             let category_list_size = Object.keys(wholesale.category_list).length;
             // Loop until nuber of rows == number of items
@@ -409,6 +414,19 @@ socket.on("Update Wholesales", (wholesales_list) => {
 
             // Add Theme Title to Wholesale UI
             wholesale_ui.appendChild(wholesale_theme_ui);
+
+            //=============================================================
+
+            // Create timer
+            let wholesale_timer_ui = document.createElement("div");
+            // Set class
+            wholesale_timer_ui.classList.add("wholesale_timer");
+            wholesale_timer_ui.id = "wholesale_timer_" + wholesale.id;
+            // Set text
+            wholesale_timer_ui.textContent = Time.displayTime(wholesale.despawn_timer);
+
+            // Add Theme Title to Wholesale UI
+            wholesale_ui.appendChild(wholesale_timer_ui);
 
             //=============================================================
 
@@ -578,4 +596,19 @@ socket.on("Update Wholesales", (wholesales_list) => {
             // Remove the Wholesale UI
             wholesale_ui.remove();
     }
+});
+
+socket.on("Update Wholesales Timers", (wholesales_list) => {
+
+     // For each Wholesale in list
+     for(let wholesale of wholesales_list){
+        // Get associated Wholesale UI
+        let wholesale_ui = document.getElementById("wholesale_" + wholesale.id);
+
+        // 1 - If Wholesale UI exist : Update it
+        if(wholesale_ui != null){
+            let timer_ui = document.getElementById("wholesale_timer_" + wholesale.id);
+            timer_ui.textContent = Time.displayTime(wholesale.despawn_timer);
+        }
+     }
 });

@@ -1,10 +1,12 @@
 import { Random } from "../utils/Random.js";
+import { Time } from "../utils/Time.js";
 import _ from "lodash";
 
 //============================================================= Wholesale ========================================================
 export class Wholesale{
     constructor(id, theme, despawn_timer){
         this.id = id;
+        this.max_despawn_time = despawn_timer;
         this.despawn_timer = despawn_timer;
 
         this.theme = theme;
@@ -56,6 +58,16 @@ export class Wholesale{
         // Player has no yet been found in the Bid List
         let player_found = false;
 
+        let last_winning_player = undefined;
+        let last_winning_bid = -1;
+        for(let i in this.bid_list){
+            if(this.bid_list[i].money >= last_winning_bid){
+                last_winning_bid = this.bid_list[i].money;
+                last_winning_player = this.bid_list[i].player;
+            }
+        }
+
+
         // For each Bid in Bid List
         for(let i in this.bid_list){
             // If Player is the same
@@ -87,6 +99,24 @@ export class Wholesale{
             // If new Bid > 0 : Add the new Bid
             if(money > 0)
                 this.bid_list.push(new Bid(player, money));
+        }
+
+
+        let new_winning_player = undefined;
+        let new_winning_bid = -1;
+        for(let i in this.bid_list){
+            if(this.bid_list[i].money >= new_winning_bid){
+                new_winning_bid = this.bid_list[i].money;
+                new_winning_player = this.bid_list[i].player;
+            }
+        }
+
+
+        if((last_winning_player == undefined ||last_winning_player.getID() != new_winning_player.getID()) && last_winning_bid != new_winning_bid){
+            let elapsed_time = this.max_despawn_time - this.despawn_timer;
+            let bonus_time = elapsed_time / 4;
+
+            this.despawn_timer += bonus_time;
         }
     }
 
@@ -137,7 +167,7 @@ export class Wholesale{
         }
 
         // Remove the Despawn Timer
-        delete wholesale_sendable.despawn_timer;
+        //delete wholesale_sendable.despawn_timer;
 
         return wholesale_sendable;
     }
